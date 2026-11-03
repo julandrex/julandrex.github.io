@@ -623,7 +623,7 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
 .tel-statut { display: flex; justify-content: space-between; padding: 15px 26px 6px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.75); }
 .tel-notif { position: absolute; z-index: 4; left: 10px; right: 10px; top: 50px; padding: 12px 14px; border-radius: 18px; background: rgba(240,244,250,.94); color: #0E2A4E; font-size: 13.5px; line-height: 1.35; transform: translateY(calc(-100% - 70px)); transition: transform .5s cubic-bezier(.2,.9,.25,1); }
 .tel-notif b { display: block; font-size: 12px; color: #5A6B80; font-weight: 600; }
-.tel-notif.vue { transform: none; }
+.tel-notif.montree { transform: none; }
 
 .vues { position: relative; flex: 1; }
 .vue { position: absolute; inset: 0; padding: 14px 18px 10px; opacity: 0; visibility: hidden; transform: translateX(14px); transition: opacity .3s, transform .35s, visibility 0s .35s; overflow: hidden; }
@@ -724,3 +724,8 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
   .appli-on .appli-etapes { display: none; }
   .appli-etiquettes .film-etiquette small { display: none; }
 }
+
+/* Téléphone : notification de demande d'échange, touchable */
+.tel-ecran .tel-notif-echange { inset: 50px 10px auto 10px; height: auto; border: 0; text-align: left; font: inherit; font-size: 13.5px; cursor: pointer; display: block; width: auto; }
+.tel-notif-echange span { display: block; }
+.tel-notif-echange b { color: #A07A12; }

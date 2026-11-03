@@ -13,7 +13,7 @@
   var lisse = function (t) { return t * t * (3 - 2 * t); };
 
   var pin = $('.appli-pin'), tel = $('#tel'), ecran = $('.tel-ecran'), reflet = $('.tel-reflet');
-  var doigt = $('.doigt'), notif = $('#tel-notif');
+  var doigt = $('.doigt'), notif = $('#tel-notif'), notifEch = $('#tel-notif-echange'), notifOuverte = false;
   var VUES = ['accueil', 'echange', 'souhaits', 'agenda'];
   var NOMS = ['01 / Le rappel', '02 / L\'échange', '03 / Les desiderata', '04 / L\'agenda'];
   var touche = { echange: false, souhaits: false }; // le visiteur a pris la main
@@ -56,6 +56,7 @@
     $('.refus', demande).hidden = false;
   });
   $('#btn-proposer').addEventListener('click', function () { $('.lien-ok').hidden = false; });
+  notifEch.addEventListener('click', function () { notifOuverte = true; notifEch.classList.remove('montree'); manuel = 'echange'; montrer('echange'); });
 
   /* Desiderata : janvier 2027 commence un vendredi */
   var cal = $('#cal'), solde = $('#solde');
@@ -85,7 +86,7 @@
 
   /* ---------- Sans animation : section normale, écrans cliquables ---------- */
   if (calme) {
-    notif.classList.add('vue');
+    notif.classList.add('montree');
     $$('.agenda li').forEach(function (li) { li.classList.add('vu'); });
     $$('.appli-etapes button').forEach(function (b, i) {
       b.addEventListener('click', function () { manuel = VUES[i]; montrer(manuel); });
@@ -172,21 +173,25 @@
     /* Étape en cours */
     var etape = Math.min(3, Math.floor(p * 4)), q = p * 4 - etape;
     if (etape !== etapePrec) {
-      etapePrec = etape; manuel = null; dernierTap = null;
+      etapePrec = etape; manuel = null; dernierTap = null; notifOuverte = false;
       chap.textContent = NOMS[etape];
       boutonsEtapes.forEach(function (b, i) { b.setAttribute('aria-current', i === etape ? 'true' : 'false'); });
     }
     pct.textContent = ('00' + Math.round(p * 100)).slice(-3) + ' %';
-    montrer(manuel || VUES[etape]);
+    // Étape de l'échange : la demande arrive d'abord en notification, sur l'accueil.
+    var attente = etape === 1 && !manuel && !touche.echange && !notifOuverte && q < 0.2;
+    montrer(manuel || (attente ? 'accueil' : VUES[etape]));
     var auto = !manuel;
+    notifEch.classList.toggle('montree', attente && q > 0.03);
 
-    notif.classList.toggle('vue', etape === 0 && q > 0.12 && q < 0.9 && vueActive === 'accueil');
+    notif.classList.toggle('montree', etape === 0 && q > 0.12 && q < 0.9 && vueActive === 'accueil');
 
     var cible = null, tapeA = 2;
     if (auto && etape === 1 && !touche.echange) {
       var faits = q < 0.45 ? 0 : q < 0.6 ? 1 : q < 0.75 ? 2 : 3;
       etatEchange(faits > 0, faits);
       if (q > 0.2 && q < 0.5) { cible = $('#btn-accepter'); tapeA = 0.4; }
+      if (attente && q > 0.07) { cible = notifEch; tapeA = 0.15; }
     }
     if (auto && etape === 2 && !touche.souhaits) {
       var prochain = null;
@@ -213,12 +218,12 @@
     var pr = pin.getBoundingClientRect(), tr = tel.getBoundingClientRect();
     var montree = null;
     etiquettes.forEach(function (e) {
-      var o = +e.dataset.etape === etape && q > 0.06 && q < 0.96 && vueActive === VUES[etape] ? 1 : 0;
+      var o = +e.dataset.etape === etape && q > 0.06 && q < 0.96 && (vueActive === VUES[etape] || (etape === 1 && notifEch.classList.contains('montree'))) ? 1 : 0;
       e.style.opacity = o; e.style.visibility = o ? 'visible' : 'hidden';
       if (o) montree = e;
     });
     if (montree && entree > 0.95) {
-      var el = $(montree.dataset.cible), ar = el.getBoundingClientRect();
+      var el = notifEch.classList.contains('montree') && etape === 1 ? notifEch : $(montree.dataset.cible), ar = el.getBoundingClientRect();
       if (!ar.width) { el = $('#cible-echange'); ar = el.getBoundingClientRect(); }
       var lw = montree.offsetWidth, lh = montree.offsetHeight, lx, ly, ax, ay = ar.top + ar.height / 2 - pr.top;
       if (etroit) {
