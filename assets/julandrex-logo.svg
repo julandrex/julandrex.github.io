@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Julandrex">
+  <defs>
+    <linearGradient id="jlxFond" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#173a68"/>
+      <stop offset="1" stop-color="#0E2A4E"/>
+    </linearGradient>
+    <linearGradient id="jlxOr" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E4C65E"/>
+      <stop offset="1" stop-color="#C9A12E"/>
+    </linearGradient>
+  </defs>
+  <rect x="3" y="3" width="94" height="94" rx="22" fill="url(#jlxFond)"/>
+  <rect x="4.5" y="4.5" width="91" height="91" rx="20.5" fill="none" stroke="#3a6199" stroke-opacity=".55" stroke-width="1.5"/>
+  <path fill="url(#jlxOr)" d="M40 17 H67 V56 C67 70 58.5 77 46 77 C37 77 30.5 73.5 27 66.5 L38.5 60 C40.2 63.6 42.6 65.5 46 65.5 C51 65.5 54 62.4 54 56 V28 H40 Z"/>
+  <rect x="26" y="82" width="48" height="5.5" rx="2.75" fill="#D4AF37"/>
+</svg>

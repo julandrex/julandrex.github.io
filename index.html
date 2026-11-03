@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="fr-BE" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Julandrex, planning des gardes</title>
+<meta name="description" content="Julandrex construit le planning des gardes de votre service selon ses règles, et chaque médecin le consulte sur son téléphone : desiderata, échanges, agenda. Conçu par un urgentiste belge.">
+<meta property="og:title" content="Julandrex, planning des gardes">
+<meta property="og:description" content="Le trimestre construit selon les règles du service. Chaque médecin le reçoit sur son téléphone.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_BE">
+<meta property="og:image" content="assets/julandrex-logo-256.png">
+<meta name="theme-color" content="#0A1D36">
+<link rel="icon" href="assets/julandrex-logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/julandrex-logo-256.png">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.className = "js";</script>
+</head>
+<body>
+
+<header class="entete">
+  <div class="wrap">
+    <a class="marque" href="./" aria-label="Julandrex, accueil"><img src="assets/julandrex-logo.svg" alt="" width="36" height="36">Julandrex</a>
+    <button class="burger" aria-label="Menu" aria-expanded="false" aria-controls="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <nav class="nav" id="nav" aria-label="Navigation principale">
+      <a href="#fonctionnement">Fonctionnement</a>
+      <a href="#medecins">Pour les médecins</a>
+      <a href="#securite">Sécurité</a>
+      <a href="#tarifs">Tarifs</a>
+      <a class="btn btn-or" href="#demo">Réserver une démonstration</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+
+<!-- Premier écran : le planning se construit bloc par bloc au défilement -->
+<section class="ouverture" id="scene" aria-labelledby="titre">
+  <div class="scene-pin">
+    <div class="scene-texte wrap">
+      <h1 id="titre">Le planning des gardes, sans tableur.</h1>
+      <p class="chapeau">Julandrex génère automatiquement le planning du trimestre en tenant compte des repos, des temps partiels, des congés et des week-ends. Le responsable vérifie et publie ; chaque médecin le retrouve sur son téléphone et dans son agenda.</p>
+      <div class="actions">
+        <a class="btn btn-or" href="#demo">Réserver une démonstration de 15 minutes</a>
+        <a class="btn btn-ligne" href="#tarifs">Voir les tarifs</a>
+      </div>
+      <ul class="preuve">
+        <li><span>En service depuis</span> <b>septembre 2026</b></li>
+        <li><span>Dans un service d'urgences de</span> <b>50 médecins</b></li>
+        <li><span>Hébergé à</span> <b>Francfort (UE)</b></li>
+      </ul>
+    </div>
+
+    <div class="scene-plateau">
+      <div class="tableau-cadre" id="plateau" data-ui>
+        <div class="tableau-barre">
+          <div class="titre">Urgences, <span id="periode-txt">du 9 au 22 novembre</span><span id="etat-gen">Génération en cours</span></div>
+          <div class="compteur"><b id="compte">0</b> / <span id="total">37</span> postes attribués</div>
+        </div>
+        <div class="tableau-defile" tabindex="0" aria-label="Tableau de garde">
+          <div class="grille" id="grille" role="img"></div>
+        </div>
+        <ul class="regles" aria-label="Règles du service">
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>Repos complet le lendemain d'une nuit</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>Jamais deux nuits de suite</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>Postes répartis selon le temps de travail</li>
+          <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10.5l4 4 8-9"/></svg>Le 11 novembre couvert comme un dimanche</li>
+        </ul>
+      </div>
+    </div>
+
+    <canvas class="film-toile" aria-hidden="true"></canvas>
+    <div class="film-chap" data-de="0.12" data-a="0.27">
+      <p class="film-grand">Chaque trimestre, le même tableur.</p>
+      <p class="film-petit">Des dizaines de noms placés à la main, case par case, en vérifiant les repos de tête.</p>
+    </div>
+    <div class="film-chap" data-de="0.27" data-a="0.45">
+      <p class="film-grand">Un congé, un échange : tout est à refaire.</p>
+      <p class="film-petit">Une absence suffit pour défaire la moitié du planning et créer des conflits qu'on découvre trop tard.</p>
+    </div>
+    <div class="film-chap film-chap-centre" data-de="0.46" data-a="0.6">
+      <p class="film-grand">Un clic, et le planning se génère.</p>
+      <p class="film-petit">Le moteur place chaque poste en tenant les repos, les temps partiels, les congés validés et l'équité des week-ends. Vous vérifiez, vous publiez.</p>
+    </div>
+    <div class="film-gen" aria-hidden="true"><span class="film-gen-btn">Générer le trimestre</span><span id="film-gen-etat">prêt</span></div>
+    <svg class="film-traits" aria-hidden="true"></svg>
+    <div class="film-etiquettes"></div>
+    <div class="film-bulle" hidden></div>
+    <p class="film-hud film-hud-g" aria-hidden="true"><span id="film-chap">01 / Le tableur</span><b id="film-pct">000 %</b></p>
+    <p class="film-hud film-hud-d" aria-hidden="true"><span id="film-aide">Survolez le planning</span><span>Médecins fictifs</span></p>
+    <p class="hud hud-gauche" aria-hidden="true"><span id="hud-phase">Faites défiler pour construire le planning</span><b id="hud-pct">0 %</b></p>
+    <p class="hud hud-droite"><span><i></i>En or, les postes de Dr M.V., ceux qu'il retrouve sur son téléphone.</span><span>Médecins fictifs, placement réel du moteur.</span></p>
+  </div>
+</section>
+
+<!-- Ce que l'outil remplace -->
+<section class="avant" aria-labelledby="t-avant">
+  <div class="wrap">
+    <div class="sect-tete">
+      <h2 id="t-avant" class="rev">Moins de tableur, moins de SMS.</h2>
+      <p class="rev">Le planning d'un service d'urgences, ce sont des dizaines de contraintes à tenir en même temps, puis des semaines de messages pour les changements. Julandrex reprend les deux.</p>
+    </div>
+    <div class="avant-corps">
+      <div class="situations">
+        <div class="situation rev">
+          <h3>Des jours de tableur chaque trimestre</h3>
+          <div>
+            <p>Le moteur pose tous les postes en une fois, en respectant les repos, les temps partiels, les fériés belges et l'équilibre des week-ends. Une case verrouillée ne bouge plus.</p>
+            <p class="apres">Un trimestre de 50 médecins généré en quelques minutes.</p>
+          </div>
+        </div>
+        <div class="situation rev">
+          <h3>Des desiderata éparpillés</h3>
+          <div>
+            <p>Congés, indisponibilités et souhaits arrivent dans l'outil, au même format pour tous. Vous voyez qui a répondu et vous relancez les autres en un clic.</p>
+            <p class="apres">Une liste unique, avec le solde de congés de chacun.</p>
+          </div>
+        </div>
+        <div class="situation rev">
+          <h3>Des échanges de postes par SMS</h3>
+          <div>
+            <p>Le médecin propose un échange ou cède un poste depuis son téléphone. Vous validez avec l'analyse des règles sous les yeux, et le planning se met à jour pour tout le monde.</p>
+            <p class="apres">Chaque changement tracé, l'agenda de chacun à jour.</p>
+          </div>
+        </div>
+      </div>
+      <div class="fenetre rev" data-ui aria-label="Exemple : suivi des desiderata du trimestre">
+        <div class="fenetre-barre"><i></i><i></i><i></i><span>Desiderata, 1er trimestre 2027</span></div>
+        <div class="fenetre-corps">
+          <div class="pourquoi-titre"><b>38 médecins sur 50 ont répondu</b><span>Clôture le 15 novembre</span></div>
+          <div class="jauge" aria-hidden="true"><i style="width:76%"></i></div>
+          <ul class="raisons">
+            <li><span class="av">AB</span><span><span class="nom">Dr A.B.</span><span class="motif">Congé du 4 au 15 janvier, solde 12 jours</span></span><span class="etat ok">Reçu</span></li>
+            <li><span class="av">DM</span><span><span class="nom">Dr D.M.</span><span class="motif">Pas de nuit le vendredi, souhait</span></span><span class="etat ok">Reçu</span></li>
+            <li><span class="av">GH</span><span><span class="nom">Dr G.H.</span><span class="motif">Aucune réponse</span></span><span class="etat">En attente</span></li>
+            <li><span class="av">TW</span><span><span class="nom">Dr T.W.</span><span class="motif">Aucune réponse</span></span><span class="etat">En attente</span></li>
+          </ul>
+          <button class="relance" type="button">Relancer les 12 médecins en attente</button>
+          <p class="relance-ok" role="status" hidden>Relance envoyée par e-mail et notification.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Fonctionnement -->
+<section id="fonctionnement" aria-labelledby="t-fonc">
+  <div class="wrap">
+    <div class="sect-tete">
+      <h2 id="t-fonc" class="rev">Du premier appel au planning publié.</h2>
+      <p class="rev">Vous n'installez rien. Le paramétrage de votre service est fait avec vous, et rien n'est envoyé aux médecins sans votre accord.</p>
+    </div>
+    <ol class="etapes">
+      <li class="rev"><h3>Comprendre votre service</h3><p>Postes et horaires, règles de repos et d'équité, fonctions des médecins. Un tableur ou un PDF de votre planning actuel suffit pour commencer.</p></li>
+      <li class="rev"><h3>Installer votre espace</h3><p>Votre espace est créé, la liste des médecins importée depuis Excel, les règles réglées avec vous.</p></li>
+      <li class="rev"><h3>Tester en parallèle</h3><p>Un trimestre est généré à côté de votre méthode actuelle. Vous comparez sans rien changer pour l'équipe.</p></li>
+      <li class="rev"><h3>Ouvrir aux médecins</h3><p>Chaque médecin reçoit son accès. Desiderata, échanges et agenda fonctionnent dès le premier jour.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- Deux côtés -->
+<section class="cotes" id="responsable" aria-label="Le responsable du planning">
+  <div class="wrap">
+    <div class="cote">
+      <div class="cote-texte">
+        <h2 class="rev">Une raison derrière chaque case.</h2>
+        <p class="rev">Pour le responsable du planning : quand un poste reste vide, Julandrex vous dit pourquoi, médecin par médecin. Le moteur ne force jamais une règle pour remplir une case : un trou visible vaut mieux qu'une règle enfreinte en silence.</p>
+        <ul class="points rev">
+          <li>Génération d'un mois ou d'un trimestre, jours passés conservés</li>
+          <li>Fiche par médecin : postes autorisés, heures cibles, contrat, postes fixes</li>
+          <li>Desiderata, congés, échanges et ajustements d'heures au même endroit</li>
+          <li>Heures prestées, statistiques par poste, export PDF</li>
+          <li>Publication en un clic, avec e-mail et notification aux médecins</li>
+        </ul>
+      </div>
+      <div class="fenetre rev" data-ui aria-label="Exemple : fenêtre « Pourquoi ce poste est vide ? »">
+        <div class="fenetre-barre"><i></i><i></i><i></i><span>Gestionnaire, novembre</span></div>
+        <div class="fenetre-corps">
+          <div class="pourquoi-titre"><b>Pourquoi ce poste est vide ?</b><span>Nuit du samedi 21</span></div>
+          <span class="vide">Nuit 20:00 – 08:00, non pourvue</span>
+          <ul class="raisons">
+            <li><span class="av">CL</span><span><span class="nom">Dr C.L.</span><span class="motif">Nuit la veille, repos obligatoire</span></span><span class="etat">Repos</span></li>
+            <li><span class="av">EV</span><span><span class="nom">Dr E.V.</span><span class="motif">Congé validé du 19 au 23</span></span><span class="etat">Congé</span></li>
+            <li><span class="av">JR</span><span><span class="nom">Dr J.R.</span><span class="motif">A déjà fait le week-end précédent</span></span><span class="etat">Équité</span></li>
+            <li><span class="av">NS</span><span><span class="nom">Dr N.S.</span><span class="motif">Disponible, heures sous la cible</span></span><span class="etat ok">Possible</span></li>
+          </ul>
+          <p class="fenetre-pied">Dr N.S. peut prendre ce poste sans enfreindre aucune règle. Vous l'attribuez, ou vous le laissez libre aux échanges.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- L'application des médecins : téléphone en 3D, écrans cliquables, piloté par le défilement -->
+<section class="appli" id="medecins" aria-labelledby="t-appli">
+  <div class="appli-pin">
+    <canvas class="appli-neige" aria-hidden="true"></canvas>
+
+    <div class="appli-texte">
+      <h2 id="t-appli">L'application des médecins, dans la poche.</h2>
+      <p>Rien à télécharger : une adresse à ouvrir sur le téléphone. Les boutons de l'écran fonctionnent, essayez-les.</p>
+      <ol class="appli-etapes">
+        <li><button type="button" data-etape="0">Le rappel la veille du poste</button></li>
+        <li><button type="button" data-etape="1">Un échange accepté en un geste</button></li>
+        <li><button type="button" data-etape="2">Les desiderata du trimestre</button></li>
+        <li><button type="button" data-etape="3">L'agenda toujours à jour</button></li>
+      </ol>
+    </div>
+
+    <div class="appli-scene">
+      <div class="tel" id="tel">
+        <div class="tel-couche" style="--z:-2px"></div><div class="tel-couche" style="--z:-4px"></div><div class="tel-couche" style="--z:-6px"></div>
+        <div class="tel-couche" style="--z:-8px"></div><div class="tel-couche" style="--z:-10px"></div><div class="tel-couche" style="--z:-12px"></div>
+        <div class="tel-couche" style="--z:-14px"></div><div class="tel-couche tel-dos" style="--z:-16px"></div>
+        <div class="tel-face">
+          <div class="tel-ecran" data-ui>
+            <div class="tel-ilot"></div>
+            <div class="tel-statut"><span>9:41</span><span>Julandrex</span></div>
+            <div class="tel-notif" id="tel-notif" role="status"><b>Julandrex, maintenant</b><span>Rappel : demain, nuit 18:00 – 08:00</span></div>
+
+            <div class="vues">
+              <section class="vue actif" data-vue="accueil" aria-label="Accueil">
+                <h4>Bonjour, Dr M.V.</h4>
+                <div class="carte-or" id="cible-prochain"><small>Prochain poste</small><b>Demain, nuit</b><span>Mardi 10 novembre, 18:00 – 08:00</span></div>
+                <ul class="liste">
+                  <li><span>Sa 14, week-end jour</span><span>08:00 – 20:00</span></li>
+                  <li><span>Je 19, jour</span><span>08:00 – 18:00</span></li>
+                  <li><span>Di 22, week-end nuit</span><span>20:00 – 08:00</span></li>
+                </ul>
+                <button class="bascule" type="button" id="btn-rappel" aria-pressed="true"><span>Rappel la veille de chaque poste</span><i></i></button>
+                <div class="tuiles-mini"><div><small>Congés dispo</small><b>12 j</b></div><div><small>Heures du trimestre</small><b>412 h</b></div></div>
+              </section>
+
+              <section class="vue" data-vue="echange" aria-label="Échanges">
+                <h4>Échanges</h4>
+                <div class="demande-tel" id="cible-echange">
+                  <b>Dr K.O. vous propose un échange</b>
+                  <p>Sa nuit du mardi 17 contre votre jour du jeudi 19.</p>
+                  <ul class="controles"><li>Repos respecté pour vous deux</li><li>Postes autorisés pour vous deux</li></ul>
+                  <div class="choix-tel"><button type="button" class="oui" id="btn-accepter">Accepter</button><button type="button" class="non" id="btn-refuser">Refuser</button></div>
+                  <ol class="suivi" id="suivi-echange">
+                    <li>Accepté par vous</li><li>Validé par le responsable</li><li>Agendas mis à jour</li>
+                  </ol>
+                  <p class="refus" hidden>Refusé. Dr K.O. est prévenu.</p>
+                </div>
+                <button class="lien-tel" type="button" id="btn-proposer">Proposer un de mes postes à tous les collègues libres</button>
+                <p class="lien-ok" hidden>Envoyé à 6 collègues disponibles.</p>
+              </section>
+
+              <section class="vue" data-vue="souhaits" aria-label="Desiderata">
+                <h4>Desiderata, 1er trimestre</h4>
+                <div class="mois-entete"><b>Janvier 2027</b><span>Solde : <em id="solde">12</em> jours</span></div>
+                <div class="cal" id="cal" role="grid" aria-label="Janvier 2027"></div>
+                <div class="legende-cal"><span><i class="l-conge"></i>Congé</span><span><i class="l-indispo"></i>Indisponible</span><span>Touchez un jour</span></div>
+                <button type="button" class="envoyer" id="btn-envoyer">Envoyer mes souhaits</button>
+                <p class="envoye" hidden>Envoyé. Réponse du responsable le 15 décembre.</p>
+              </section>
+
+              <section class="vue" data-vue="agenda" aria-label="Agenda">
+                <h4>Mon agenda</h4>
+                <p class="synchro"><i></i>Synchronisé avec Google Agenda</p>
+                <ol class="agenda" id="cible-agenda">
+                  <li><time>Ma 10</time><span class="ev ev-nuit">Nuit, Urgences<small>18:00 – 08:00</small></span></li>
+                  <li><time>Sa 14</time><span class="ev">Week-end jour, Urgences<small>08:00 – 20:00</small></span></li>
+                  <li><time>Ma 17</time><span class="ev ev-nuit ev-neuf">Nuit, Urgences<small>échange avec Dr K.O.</small></span></li>
+                  <li><time>Di 22</time><span class="ev ev-nuit">Week-end nuit, Urgences<small>20:00 – 08:00</small></span></li>
+                </ol>
+                <button type="button" class="envoyer" id="btn-lien">Copier mon lien d'agenda</button>
+                <p class="envoye" id="lien-copie" hidden>Lien copié. À coller dans Google ou Apple.</p>
+              </section>
+            </div>
+
+            <nav class="onglets" aria-label="Menu de l'application">
+              <button type="button" data-vue="accueil" class="actif">Accueil</button>
+              <button type="button" data-vue="echange">Échanges</button>
+              <button type="button" data-vue="souhaits">Souhaits</button>
+              <button type="button" data-vue="agenda">Agenda</button>
+            </nav>
+            <span class="doigt" aria-hidden="true"></span>
+          </div>
+          <div class="tel-reflet" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+
+    <svg class="appli-traits" aria-hidden="true"><polyline id="appli-ligne"/><path id="appli-croix"/><circle id="appli-point" r="3"/></svg>
+    <div class="appli-etiquettes" aria-hidden="true">
+      <div class="film-etiquette" data-etape="0" data-cible="#tel-notif"><b>RAPPEL_01</b><span>Un rappel la veille</span><small>notification avant chaque poste</small></div>
+      <div class="film-etiquette" data-etape="1" data-cible="#btn-accepter"><b>ECHANGE_02</b><span>Accepté en un geste</span><small>règles revérifiées, responsable prévenu</small></div>
+      <div class="film-etiquette" data-etape="2" data-cible="#cal"><b>SOUHAITS_03</b><span>Desiderata en deux minutes</span><small>congés et indisponibilités du trimestre</small></div>
+      <div class="film-etiquette" data-etape="3" data-cible="#cible-agenda"><b>AGENDA_04</b><span>Dans son agenda</span><small>Google ou Apple, à jour à chaque changement</small></div>
+    </div>
+    <p class="appli-hud" aria-hidden="true"><span id="appli-chap">01 / Le rappel</span><b id="appli-pct">000 %</b></p>
+  </div>
+</section>
+
+<!-- Sécurité -->
+<section class="securite" id="securite" aria-labelledby="t-secu">
+  <div class="wrap">
+    <div class="sect-tete">
+      <h2 id="t-secu" class="rev">Vos données restent en Europe.</h2>
+      <p class="rev">Aucune donnée de patient. Seulement les plannings, les congés et les coordonnées des médecins, avec un cadre écrit pour chacune.</p>
+    </div>
+    <div class="garanties">
+      <div class="garantie rev"><h3>Hébergé dans l'Union européenne</h3><p>Base de données à Francfort, copie de sauvegarde chiffrée, restauration testée.</p></div>
+      <div class="garantie rev"><h3>Accès protégés</h3><p>Double authentification obligatoire pour les responsables, mots de passe hachés, journal des accès.</p></div>
+      <div class="garantie rev"><h3>Hôpitaux cloisonnés</h3><p>Chaque hôpital ne voit que ses données. Le cloisonnement est vérifié par une batterie de tests à chaque mise à jour.</p></div>
+      <div class="garantie rev"><h3>RGPD</h3><p>Conditions et notice propres à votre hôpital, purges automatiques, export complet de vos données à tout moment.</p></div>
+      <div class="garantie rev"><h3>Contrat de sous-traitance</h3><p>Convention et contrat article 28 : votre hôpital reste responsable du traitement, Julandrex est sous-traitant.</p></div>
+      <div class="garantie rev"><h3>NIS2</h3><p>Auto-évaluation CyberFundamentals Basic et analyse de risques, transmises sur demande à votre DPO.</p></div>
+    </div>
+    <p class="note">Votre DPO veut le dossier complet avant la démonstration ? <a class="lien" href="#demo">Demandez la fiche sécurité et conformité</a>.</p>
+  </div>
+</section>
+
+<!-- Origine -->
+<section class="origine" aria-labelledby="t-origine">
+  <div class="wrap">
+    <div>
+      <h2 id="t-origine" class="sr">D'où vient Julandrex</h2>
+      <blockquote class="rev">« J'ai écrit Julandrex pour mon propre service. Chaque règle du moteur vient d'une remarque réelle de la responsable du planning ou d'un collègue. »</blockquote>
+      <p class="signature"><b>Dr Giuseppe Sorce</b>Médecin urgentiste, concepteur de Julandrex</p>
+    </div>
+    <dl class="faits rev">
+      <div><dt>Premier service équipé</dt><dd>Urgences en Belgique</dd></div>
+      <div><dt>Médecins dans ce service</dt><dd>environ 50</dd></div>
+      <div><dt>En service depuis</dt><dd>septembre 2026</dd></div>
+      <div><dt>Fériés et fuseau</dt><dd>Belges et heure de Bruxelles</dd></div>
+      <div><dt>Langue</dt><dd>Français</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- Tarifs -->
+<section class="tarifs" id="tarifs" aria-labelledby="t-tarifs">
+  <div class="wrap">
+    <div class="sect-tete">
+      <h2 id="t-tarifs" class="rev">Un prix selon la taille du service.</h2>
+      <p class="rev">Toutes les fonctions sont comprises, pour le responsable comme pour les médecins. Un trimestre d'essai en parallèle, sans abonnement, avant de vous décider.</p>
+    </div>
+
+    <div class="calcul rev">
+      <div class="calcul-reglage">
+        <label for="effectif">Médecins actifs dans le service</label>
+        <p class="aide">Ceux qui figurent au planning, assistants compris.</p>
+        <div class="effectif"><output id="effectif-val" for="effectif">50</output><span>médecins</span></div>
+        <input type="range" id="effectif" min="5" max="120" step="1" value="50">
+        <div class="echelle" aria-hidden="true"><span style="left:0.0%">5</span><span style="left:8.7%">15</span><span style="left:30.43%">40</span><span style="left:65.22%">80</span><span style="left:100.0%">120+</span></div>
+        <div class="periode" role="group" aria-label="Période de paiement">
+          <button type="button" data-p="mensuel" aria-pressed="true">Mensuel</button>
+          <button type="button" data-p="annuel" aria-pressed="false">Annuel <span class="gain">2 mois offerts</span></button>
+        </div>
+      </div>
+      <div class="calcul-prix" aria-live="polite">
+        <div class="formule" id="formule-nom"></div>
+        <div class="montant"><b id="montant"></b><span id="unite"></span></div>
+        <p class="detail" id="detail"></p>
+        <a class="btn btn-or" id="btn-souscrire" href="commander.html">Commander cette formule</a>
+        <p class="sous-btn">Paiement par carte, domiciliation SEPA ou sur facture. <a href="#demo">Commencer par l'essai</a></p>
+      </div>
+    </div>
+
+    <div class="inclus rev">
+      <div>
+        <h3>Compris dans l'abonnement</h3>
+        <ul>
+          <li><span>Médecins, postes et règles</span><span>Illimités</span></li>
+          <li><span>Outil du responsable et application des médecins</span><span>Inclus</span></li>
+          <li><span>E-mails, notifications, agenda</span><span>Inclus</span></li>
+          <li><span>Hébergement UE et sauvegardes</span><span>Inclus</span></li>
+          <li><span>Support par e-mail</span><span>Réponse sous 1 jour ouvrable</span></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Mise en route et services</h3>
+        <ul>
+          <li><span>Essai d'un trimestre en parallèle</span><span>Sans abonnement</span></li>
+          <li><span>Paramétrage et import des médecins</span><span>600 € HTVA, offert sur 12 mois</span></li>
+          <li><span>Paiement annuel</span><span>12 mois pour le prix de 10</span></li>
+          <li><span>Travaux sur demande (saisies, exports particuliers)</span><span>70 € HTVA de l'heure</span></li>
+          <li><span>Plusieurs services ou sites</span><span>Sur devis</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Questions -->
+<section class="faq" aria-labelledby="t-faq">
+  <div class="wrap">
+    <h2 id="t-faq" class="rev">Questions fréquentes</h2>
+    <div class="liste rev">
+      <details><summary>Faut-il installer quelque chose à l'hôpital ?</summary><p>Non. Le responsable travaille dans son navigateur, les médecins sur leur téléphone. Aucun accès à votre réseau ni à votre dossier patient n'est nécessaire.</p></details>
+      <details><summary>Le moteur peut-il imposer un planning ?</summary><p>Non. Julandrex propose, le responsable décide. Les cases verrouillées ne bougent pas, et rien n'est publié ni envoyé aux médecins sans votre action.</p></details>
+      <details><summary>Nos règles sont particulières. Est-ce que ça marchera ?</summary><p>Les règles de repos, d'équité, de temps partiel, de postes autorisés et de week-ends se règlent par service. Pendant l'essai, un trimestre réel est généré à côté du vôtre : vous jugez sur pièce.</p></details>
+      <details><summary>Les assistants sont-ils pris en compte ?</summary><p>Oui. Leurs postes autorisés et leurs heures cibles sont propres à leur fiche, et le relevé des heures du trimestre est disponible pour le suivi de la loi du 12 décembre 2010.</p></details>
+      <details><summary>Comment se passe le paiement pour un hôpital ?</summary><p>Le plus souvent sur facture, avec votre numéro de bon de commande, par virement à 30 jours. Le paiement par carte ou par domiciliation SEPA est aussi possible pour un abonnement mensuel ou annuel.</p></details>
+      <details><summary>Et si nous arrêtons ?</summary><p>L'abonnement mensuel s'arrête à la fin du mois en cours. Vous recevez l'export complet de vos données, puis elles sont effacées selon le contrat de sous-traitance.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- Démonstration -->
+<section class="demo" id="demo" aria-labelledby="t-demo">
+  <div class="wrap">
+    <div>
+      <h2 id="t-demo" class="rev">Quinze minutes pour juger.</h2>
+      <p>Je vous montre la génération d'un trimestre, la vue d'un médecin et un échange de postes, sur un hôpital de démonstration. Ensuite, si vous le souhaitez, on prépare l'essai avec votre planning actuel.</p>
+      <p class="direct">Vous préférez écrire directement ? <a href="mailto:sorcegiuseppepro@gmail.com">sorcegiuseppepro@gmail.com</a></p>
+    </div>
+    <form class="formulaire rev" id="form-demo" novalidate>
+      <div class="duo">
+        <div class="champ"><label for="d-nom">Nom *</label><input id="d-nom" name="nom" autocomplete="name" required></div>
+        <div class="champ"><label for="d-fonction">Fonction</label><input id="d-fonction" name="fonction" placeholder="Chef de service, responsable du planning…"></div>
+      </div>
+      <div class="duo">
+        <div class="champ"><label for="d-hopital">Hôpital et service *</label><input id="d-hopital" name="hopital" autocomplete="organization" required></div>
+        <div class="champ"><label for="d-taille">Nombre de médecins</label><select id="d-taille" name="taille"><option>Moins de 15</option><option>De 16 à 40</option><option selected>De 41 à 80</option><option>Plus de 80</option></select></div>
+      </div>
+      <div class="duo">
+        <div class="champ"><label for="d-email">E-mail professionnel *</label><input id="d-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="champ"><label for="d-tel">Téléphone</label><input id="d-tel" name="tel" type="tel" autocomplete="tel"></div>
+      </div>
+      <div class="champ"><label for="d-msg">Votre service en quelques mots</label><textarea id="d-msg" name="message" placeholder="Postes, gardes, ce qui vous prend le plus de temps aujourd'hui…"></textarea></div>
+      <p class="erreur" role="alert"></p>
+      <div><button class="btn btn-or" type="submit">Demander ma démonstration</button></div>
+      <p class="mention" id="demo-envoye" hidden role="status">Votre messagerie s'ouvre avec la demande prête à envoyer. Réponse sous un jour ouvrable.</p>
+      <p class="mention">Vos coordonnées servent uniquement à vous répondre. <a href="confidentialite.html">Confidentialité</a></p>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="pied">
+  <div class="wrap">
+    <div>
+      <a class="marque" href="./"><img src="assets/julandrex-logo.svg" alt="" width="36" height="36">Julandrex</a>
+      <p>Planning des gardes pour les services hospitaliers. Une aide à la décision : le planning publié reste validé par le responsable du service.</p>
+    </div>
+    <div>
+      <h4>Produit</h4>
+      <ul><li><a href="#fonctionnement">Fonctionnement</a></li><li><a href="#securite">Sécurité</a></li><li><a href="#tarifs">Tarifs</a></li><li><a href="commander.html">Commander</a></li></ul>
+    </div>
+    <div>
+      <h4>Informations</h4>
+      <ul><li><a href="mentions-legales.html">Mentions légales</a></li><li><a href="confidentialite.html">Confidentialité</a></li><li><a href="conditions.html">Conditions générales</a></li><li><a href="mailto:sorcegiuseppepro@gmail.com">Contact</a></li></ul>
+    </div>
+    <p class="pied-nom" aria-hidden="true">Julandrex</p>
+    <div class="bas"><span>© <span class="annee">2026</span> Julandrex</span><span>Conçu en Belgique, par un médecin urgentiste</span></div>
+  </div>
+</footer>
+
+<script src="assets/config.js"></script>
+<script src="assets/site.js"></script>
+<script src="assets/appli.js"></script>
+<script type="module" src="assets/film.js"></script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr-BE" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commander Julandrex</title>
+<meta name="description" content="Commander l'abonnement Julandrex pour votre service : paiement sur facture par virement, par carte ou par domiciliation SEPA.">
+<meta name="theme-color" content="#0A1D36">
+<link rel="icon" href="assets/julandrex-logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.className = "js";</script>
+</head>
+<body>
+
+<header class="entete">
+  <div class="wrap">
+    <a class="marque" href="./" aria-label="Julandrex, accueil"><img src="assets/julandrex-logo.svg" alt="" width="36" height="36">Julandrex</a>
+    <nav class="nav nav-courte" aria-label="Navigation">
+      <a href="./#tarifs">Revoir les tarifs</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-tete">
+    <div class="wrap">
+      <h1>Commander Julandrex</h1>
+      <p>Trois minutes. Le paiement se fait sur facture ou en ligne, et votre espace est créé dans les deux jours ouvrables.</p>
+    </div>
+  </div>
+
+  <div class="page-corps">
+    <div class="wrap commande">
+      <form id="form-commande" class="formulaire" novalidate>
+
+        <div class="bloc">
+          <h2>Votre formule</h2>
+          <div class="champ"><label for="c-formule">Formule</label><select id="c-formule" name="formule"></select></div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-periode">Paiement</label><select id="c-periode" name="periode"><option value="mensuel">Mensuel</option><option value="annuel">Annuel, 2 mois offerts</option></select></div>
+          </div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-medecins">Médecins actifs *</label><input id="c-medecins" name="medecins" type="number" min="1" max="500" inputmode="numeric"></div>
+            <div class="champ"><label for="c-debut">Début souhaité</label><input id="c-debut" name="debut" type="month"></div>
+          </div>
+          <label class="case" style="margin-top:18px"><input type="checkbox" name="engagement" checked> <span>Engagement de 12 mois : la mise en route (600 € HTVA) est offerte.</span></label>
+        </div>
+
+        <div class="bloc">
+          <h2>Votre hôpital</h2>
+          <div class="duo">
+            <div class="champ"><label for="c-hopital">Hôpital *</label><input id="c-hopital" name="hopital" autocomplete="organization"></div>
+            <div class="champ"><label for="c-service">Service *</label><input id="c-service" name="service" placeholder="Urgences, anesthésie…"></div>
+          </div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-contact">Personne de contact *</label><input id="c-contact" name="contact" autocomplete="name"></div>
+            <div class="champ"><label for="c-fonction">Fonction</label><input id="c-fonction" name="fonction"></div>
+          </div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-email">E-mail *</label><input id="c-email" name="email" type="email" autocomplete="email"></div>
+            <div class="champ"><label for="c-tel">Téléphone</label><input id="c-tel" name="tel" type="tel" autocomplete="tel"></div>
+          </div>
+        </div>
+
+        <div class="bloc">
+          <h2>Facturation</h2>
+          <div class="champ"><label for="c-adresse">Adresse de facturation *</label><textarea id="c-adresse" name="adresse" autocomplete="street-address" placeholder="Service comptabilité, rue, numéro, code postal, ville"></textarea></div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-tva">Numéro de TVA</label><input id="c-tva" name="tva" placeholder="BE0123456789"></div>
+            <div class="champ"><label for="c-po">Numéro de bon de commande interne</label><input id="c-po" name="po" aria-describedby="c-po-aide"><p class="aide" id="c-po-aide">S'il est exigé par vos achats, il figurera sur chaque facture.</p></div>
+          </div>
+        </div>
+
+        <div class="bloc">
+          <h2>Mode de paiement</h2>
+          <div class="mode">
+            <label><input type="radio" name="mode" id="mode-facture" value="facture" checked><span><b>Sur facture, par virement à 30 jours</b><span>Le choix habituel des hôpitaux. Vous recevez le bon de commande par e-mail, puis la facture.</span></span></label>
+            <label><input type="radio" name="mode" id="mode-carte" value="carte"><span><b>Carte bancaire ou domiciliation SEPA</b><span id="carte-note">Paiement sécurisé par Stripe.</span></span></label>
+          </div>
+          <div class="virement" id="bloc-virement">
+            <b>Coordonnées pour le virement</b>
+            <dl><dt>Titulaire</dt><dd id="vir-titulaire"></dd><dt>IBAN</dt><dd id="vir-iban"></dd><dt>BIC</dt><dd id="vir-bic"></dd></dl>
+          </div>
+        </div>
+
+        <label class="case"><input type="checkbox" name="conditions"> <span>J'ai lu et j'accepte les <a class="lien" href="conditions.html" target="_blank" rel="noopener">conditions générales</a> et la <a class="lien" href="confidentialite.html" target="_blank" rel="noopener">politique de confidentialité</a>.</span></label>
+        <p class="erreur" role="alert"></p>
+        <div><button class="btn btn-or" id="btn-commander" type="submit">Envoyer le bon de commande</button></div>
+
+        <div class="confirmation" id="commande-envoyee" hidden role="status">
+          <h2>Bon de commande <span id="ref-commande"></span> prêt</h2>
+          <p>Votre messagerie s'est ouverte avec le bon de commande complet : il ne reste qu'à l'envoyer. Vous recevez la confirmation et la facture sous deux jours ouvrables. Si rien ne s'est ouvert, écrivez à <a class="lien" href="mailto:sorcegiuseppepro@gmail.com">sorcegiuseppepro@gmail.com</a> en citant cette référence.</p>
+        </div>
+      </form>
+
+      <aside class="recap" aria-label="Récapitulatif">
+        <h2>Récapitulatif</h2>
+        <dl>
+          <div><dt>Formule</dt><dd id="r-formule"></dd></div>
+          <div><dt>Paiement</dt><dd id="r-periode"></dd></div>
+          <div><dt>Abonnement</dt><dd id="r-abo"></dd></div>
+          <div><dt>Mise en route</dt><dd id="r-mer"></dd></div>
+          <div class="total"><dt>Premier paiement</dt><dd id="r-total"></dd></div>
+        </dl>
+        <p>Montants hors TVA. Le prix suit l'effectif du service, revu une fois par an. L'abonnement mensuel s'arrête à la fin du mois en cours, sur simple e-mail.</p>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer class="pied">
+  <div class="wrap">
+    <div class="bas"><span>© <span class="annee">2026</span> Julandrex</span><span><a href="mentions-legales.html">Mentions légales</a> &nbsp; <a href="confidentialite.html">Confidentialité</a> &nbsp; <a href="conditions.html">Conditions générales</a></span></div>
+  </div>
+</footer>
+
+<script src="assets/config.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>
