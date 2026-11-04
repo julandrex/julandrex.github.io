@@ -409,7 +409,7 @@ function demarrer() {
     genBtn.classList.toggle('appui', p >= 0.585);
     genEtat.textContent = p < 0.585 ? 'prêt'
       : p < GEN_A + 0.005 ? 'génération en cours, ' + generes + ' / ' + aGenerer.length + ' postes'
-      : aGenerer.length + ' / ' + aGenerer.length + ' postes, 0 conflit, terminé en 4,2 s';
+      : aGenerer.length + ' / ' + aGenerer.length + ' postes, 0 conflit, prêt à vérifier';
 
     /* Neige */
     neige.rotation.y = temps * 0.01;
