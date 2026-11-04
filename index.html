@@ -227,16 +227,17 @@
             <button type="button" class="tel-notif tel-notif-echange" id="tel-notif-echange"><b>Julandrex, demande d'échange</b><span>Dr K.O. vous propose sa nuit du mardi 17 contre votre jour du jeudi 19. Touchez pour répondre.</span></button>
 
             <div class="vues">
-              <section class="vue actif" data-vue="accueil" aria-label="Accueil">
-                <h4>Bonjour, Dr M.V.</h4>
-                <div class="carte-or" id="cible-prochain"><small>Prochain poste</small><b>Demain, nuit</b><span>Mardi 10 novembre, 18:00 – 08:00</span></div>
-                <ul class="liste">
-                  <li><span>Sa 14, week-end jour</span><span>08:00 – 20:00</span></li>
-                  <li><span>Je 19, jour</span><span>08:00 – 18:00</span></li>
-                  <li><span>Di 22, week-end nuit</span><span>20:00 – 08:00</span></li>
-                </ul>
-                <button class="bascule" type="button" id="btn-rappel" aria-pressed="true"><span>Rappel la veille de chaque poste</span><i></i></button>
-                <div class="tuiles-mini"><div><small>Congés dispo</small><b>12 j</b></div><div><small>Heures du trimestre</small><b>412 h</b></div></div>
+              <section class="vue actif vue-cal" data-vue="accueil" aria-label="Mon planning">
+                <div class="v-tb"><span class="v-av">MV</span><span class="v-nm">Dr M.V.<small>Urgences</small></span></div>
+                <div class="v-mois">
+                  <button type="button" class="v-nav" id="mois-prec" aria-label="Mois précédent">&lsaquo;</button>
+                  <span id="mois-nom">Novembre 2026</span>
+                  <button type="button" class="v-nav" id="mois-suiv" aria-label="Mois suivant">&rsaquo;</button>
+                  <button type="button" class="v-pill" id="pill-echange">1 échange</button>
+                </div>
+                <div class="v-cal-hdr"><span>Lu</span><span>Ma</span><span>Me</span><span>Je</span><span>Ve</span><span>Sa</span><span>Di</span></div>
+                <div class="v-cal" id="v-cal" role="grid" aria-label="Mes postes du mois"></div>
+                <div class="v-detail" id="v-detail"><small>Prochain poste</small><b>Demain, nuit</b><span>Mardi 10 novembre, 18:00 – 08:00</span></div>
               </section>
 
               <section class="vue" data-vue="echange" aria-label="Échanges">

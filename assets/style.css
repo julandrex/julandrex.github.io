@@ -750,3 +750,43 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
 
 .film-on .film-chap[data-phase="5"] { top: auto; bottom: 12vh; max-width: min(520px, 40vw); }
 @media (max-width: 760px) { .film-on .film-chap[data-phase="5"] { top: auto; bottom: 12vh; max-width: none; } }
+
+/* Téléphone : calendrier du mois, repris du viewer des médecins */
+.vue-cal { padding: 4px 10px 8px; }
+.v-tb { display: flex; align-items: center; gap: 8px; padding: 2px 4px 8px; }
+.v-av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 700; background: var(--or); color: var(--nuit); }
+.v-nm { font-size: 13px; font-weight: 600; line-height: 1.15; }
+.v-nm small { display: block; font-size: 10px; color: #525E78; font-weight: 500; }
+.v-mois { display: flex; align-items: center; justify-content: center; gap: 8px; background: #161B27; border-radius: 10px; padding: 6px 8px; margin-bottom: 6px; }
+.v-mois span { font-size: 12.5px; font-weight: 600; min-width: 104px; text-align: center; }
+.v-nav { width: 26px; height: 26px; border-radius: 7px; background: #1C2235; border: 1px solid rgba(255,255,255,.08); color: #DDE3F0; font-size: 16px; line-height: 1; cursor: pointer; padding: 0; }
+.v-pill { background: #F59E0B; color: #000; border: 0; border-radius: 12px; padding: 2px 8px; font: 700 10.5px var(--f); cursor: pointer; }
+.v-cal-hdr { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 2px; }
+.v-cal-hdr span { text-align: center; font-size: 9.5px; font-weight: 600; letter-spacing: .5px; color: #525E78; text-transform: uppercase; padding: 3px 0; }
+.v-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 2px; }
+.v-pre { min-height: 40px; }
+.v-j { position: relative; min-height: 40px; border: 0; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 10px 0 0; font: inherit; color: #DDE3F0; cursor: pointer; transition: filter .15s, transform .12s; }
+.v-j i { position: absolute; top: 4px; left: 5px; font-style: normal; font-size: 9px; font-weight: 500; color: #8892AA; line-height: 1; }
+.v-j b { font-size: 11px; font-weight: 800; letter-spacing: .2px; line-height: 1; }
+.v-j.v-we i { color: #F59E0B; }
+.v-j.v-vide { background: #3D1A1A; }
+.v-j.v-poste { background: color-mix(in srgb, var(--pc) 20%, transparent); }
+.v-j.v-poste b { color: var(--pc); }
+.v-j.v-poste i { color: color-mix(in srgb, var(--pc) 80%, transparent); }
+.v-j.v-conge { background: rgba(59,130,246,.2); }
+.v-j.v-conge b { color: #3B82F6; font-size: 9.5px; }
+.v-j.v-auj { box-shadow: 0 0 0 2px #3B82F6; }
+.v-j.v-passe { opacity: .45; filter: grayscale(.3); }
+.v-j:hover { filter: brightness(1.2); }
+.v-j.v-choisi { box-shadow: 0 0 0 2px var(--or); }
+.v-detail { margin-top: 8px; background: #161B27; border-radius: 12px; padding: 10px 12px; font-size: 13px; }
+.v-detail small { display: block; font-size: 11px; color: #8892AA; }
+.v-detail b { display: block; font-size: 14.5px; margin: 2px 0; }
+.v-detail span { color: #8892AA; font-size: 12.5px; }
+.v-lien { margin-top: 6px; background: none; border: 0; padding: 4px 0; color: #E4C65E; font: 600 12.5px var(--f); cursor: pointer; }
+
+/* Film : textes posés sur un fond, lisibles par-dessus la scène */
+.film-on .film-chap { background: rgba(226, 231, 237, .94); padding: 22px 26px 24px; }
+.film-on .film-chap-centre { padding: 20px 28px 22px; }
+.film-on .film-gen #film-gen-etat, .film-on .film-remp-etat { background: rgba(10, 29, 54, .88); padding: 10px 14px; }
+.film-on .film-remp-etat { width: auto; max-width: min(90vw, 720px); }

@@ -31,16 +31,68 @@
     b.addEventListener('click', function () { manuel = b.dataset.vue; montrer(manuel); });
   });
 
-  /* Accueil : rappel la veille */
-  var btnRappel = $('#btn-rappel');
-  btnRappel.addEventListener('click', function () {
-    btnRappel.setAttribute('aria-pressed', btnRappel.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+  /* Accueil : le calendrier du mois, comme dans le viewer des médecins.
+     Couleur et code par poste, jours de repos sombres, aujourd'hui cerclé, jours passés grisés. */
+  var POSTES = {
+    J: { nom: 'Jour', code: 'J', h: '08:00 – 18:00', c: '#38BDF8' },
+    S: { nom: 'Soir', code: 'S', h: '13:00 – 21:00', c: '#F59E0B' },
+    N: { nom: 'Nuit', code: 'N', h: '18:00 – 08:00', c: '#818CF8' },
+    WJ: { nom: 'Week-end jour', code: 'WE J', h: '08:00 – 20:00', c: '#22C55E' },
+    WN: { nom: 'Week-end nuit', code: 'WE N', h: '20:00 – 08:00', c: '#A78BFA' }
+  };
+  var MOIS = [
+    { nom: 'Novembre 2026', an: 2026, m: 10, auj: 9, postes: { 2: 'J', 6: 'S', 10: 'N', 14: 'WJ', 19: 'J', 22: 'WN', 25: 'S', 28: 'WN' }, conges: {} },
+    { nom: 'Décembre 2026', an: 2026, m: 11, auj: 0, postes: { 3: 'J', 8: 'N', 12: 'WJ', 16: 'S', 18: 'J' }, conges: { 21: 1, 22: 1, 23: 1, 24: 1 } }
+  ];
+  var JOURS_LONG = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+  var iMois = 0, calEl = $('#v-cal'), detail = $('#v-detail');
+  function postesDuMois(M) {
+    var ps = {}, k;
+    for (k in M.postes) ps[k] = M.postes[k];
+    if (M.m === 10 && demande && demande.classList.contains('accepte')) { delete ps[19]; ps[17] = 'N'; } // l'échange accepté est déjà dans le calendrier
+    return ps;
+  }
+  function dessinerMois() {
+    var M = MOIS[iMois], ps = postesDuMois(M);
+    $('#mois-nom').textContent = M.nom;
+    var premier = (new Date(M.an, M.m, 1).getDay() + 6) % 7, nb = new Date(M.an, M.m + 1, 0).getDate();
+    var html = '';
+    for (var v = 0; v < premier; v++) html += '<span class="v-pre"></span>';
+    for (var d = 1; d <= nb; d++) {
+      var dow = (premier + d - 1) % 7, we = dow >= 5, code = ps[d], P = code && POSTES[code];
+      var cls = 'v-j' + (we ? ' v-we' : '') + (d === M.auj ? ' v-auj' : '') + (M.auj && d < M.auj ? ' v-passe' : '') + (P ? ' v-poste' : M.conges[d] ? ' v-conge' : ' v-vide');
+      var style = P ? ' style="--pc:' + P.c + '"' : '';
+      html += '<button type="button" class="' + cls + '"' + style + ' data-j="' + d + '"><i>' + d + '</i>' + (P ? '<b>' + P.code + '</b>' : M.conges[d] ? '<b>Congé</b>' : '') + '</button>';
+    }
+    calEl.innerHTML = html;
+  }
+  function montrerJour(d) {
+    var M = MOIS[iMois], ps = postesDuMois(M), P = POSTES[ps[d]];
+    var date = JOURS_LONG[new Date(M.an, M.m, d).getDay()] + ' ' + d + ' ' + M.nom.split(' ')[0].toLowerCase();
+    detail.innerHTML = P
+      ? '<small>' + date.charAt(0).toUpperCase() + date.slice(1) + '</small><b>' + P.nom + ', ' + P.h + '</b><button type="button" class="v-lien" data-aller="echange">Proposer un échange</button>'
+      : M.conges[d] ? '<small>' + date + '</small><b>Congé validé</b>'
+      : '<small>' + date + '</small><b>Pas de poste ce jour-là</b><button type="button" class="v-lien" data-aller="souhaits">Poser un souhait</button>';
+  }
+  calEl.addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    $$('.v-j.v-choisi', calEl).forEach(function (x) { x.classList.remove('v-choisi'); });
+    b.classList.add('v-choisi'); montrerJour(+b.dataset.j);
   });
+  detail.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-aller]'); if (b) { manuel = b.dataset.aller; montrer(manuel); }
+  });
+  $('#mois-prec').addEventListener('click', function () { iMois = Math.max(0, iMois - 1); dessinerMois(); });
+  $('#mois-suiv').addEventListener('click', function () { iMois = Math.min(MOIS.length - 1, iMois + 1); dessinerMois(); });
+  $('#pill-echange').addEventListener('click', function () { manuel = 'echange'; montrer('echange'); });
+  dessinerMois();
 
   /* Échange */
   var demande = $('#cible-echange'), suivi = $$('#suivi-echange li'), minuteurs = [];
   function etatEchange(accepte, faits) {
+    var avant = demande.classList.contains('accepte');
     demande.classList.toggle('accepte', accepte);
+    if (avant !== accepte && typeof dessinerMois === 'function') dessinerMois();
     suivi.forEach(function (li, i) { li.classList.toggle('fait', i < faits); });
   }
   $('#btn-accepter').addEventListener('click', function () {
