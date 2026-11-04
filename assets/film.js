@@ -49,7 +49,7 @@ function demarrer() {
 
   /* ---------- Rendu ---------- */
   const renderer = new THREE.WebGLRenderer({ canvas: toile, antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   const scene = new THREE.Scene();
@@ -147,7 +147,7 @@ function demarrer() {
   let ordre = 0, demi = 0;
   for (let l = 0; l < LIGNES; l++) {
     for (let c = 0; c < COLS; c++) {
-      const mat = new THREE.MeshStandardMaterial({ roughness: .5, metalness: .04, transparent: true });
+      const mat = new THREE.MeshStandardMaterial({ roughness: .5, metalness: .04, transparent: true, map: texCellule('vide', '') });
       const m = new THREE.Mesh(geo, mat);
       groupe.add(m);
       const cel = {
@@ -279,6 +279,11 @@ function demarrer() {
     etroit: { g: [[.04, .12], [.04, .84]], d: [[.53, .12], [.53, .84]] }
   };
 
+  /* Toutes les textures du tableur sont dessinées et envoyées à la carte graphique d'avance :
+     aucun à-coup quand un nom apparaît en plein défilement. */
+  for (let pp = 0; pp <= 0.5; pp += 0.0025) cellules.forEach(c => { const [ty, tx] = etatTableur(c, pp); texCellule(ty, tx); });
+  cache.forEach(t => renderer.initTexture(t));
+
   /* ---------- Mise en page selon l'écran ---------- */
   let W = 1, H = 1, etroit = false, distTab = 30, distPlan = 30, vue = 0;
   const tanF = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -294,7 +299,7 @@ function demarrer() {
     distPlan = distPour(largeurPlan, hauteurPlan * 0.8, etroit ? 1.16 : 1.32);
     vue = 2 * distTab * tanF;
   }
-  addEventListener('resize', redim); redim();
+  addEventListener('resize', () => { redim(); etiquettes.forEach(e => { e.lw = 0; }); }); redim();
 
   /* ---------- Souris : parallaxe, lampe, brique survolée ---------- */
   const souris = { x: 0, y: 0, sx: 0, sy: 0, dedans: false, px: 0, py: 0 };
@@ -322,8 +327,13 @@ function demarrer() {
 
   const CHAPS = [[0, '01 / Le tableur'], [0.19, '02 / Le moindre changement'], [0.45, '03 / Génération automatique'], [0.77, '04 / Le planning du service']];
 
+  // Le film suit le défilement avec un léger amorti : un cran de molette glisse au lieu de sauter.
+  let pLisse = progres, tPrec = 0;
   function image(t) {
-    const p = progres, temps = (t - t0) / 1000;
+    const dt = Math.min(0.1, tPrec ? (t - tPrec) / 1000 : 0.016); tPrec = t;
+    pLisse += (progres - pLisse) * (1 - Math.exp(-dt * 6.5));
+    if (Math.abs(progres - pLisse) < 0.00005) pLisse = progres;
+    const p = pLisse, temps = (t - t0) / 1000;
     souris.sx += (souris.x - souris.sx) * 0.06; souris.sy += (souris.y - souris.sy) * 0.06;
 
     /* Textes */
@@ -378,7 +388,6 @@ function demarrer() {
       if (cle !== cel.cle) {
         cel.cle = cle;
         m.material.map = versPlan ? pl.tex : texCellule(type, txt);
-        m.material.needsUpdate = true;
       }
       const cible = pl || { x: ex.x * 2.4 + cel.dir.x * 3, y: ex.y * 2.4 + cel.dir.y * 3, w: ex.w * .5, h: ex.h * .5, d: .05 };
       const fin = pl ? eI : 0;
@@ -455,7 +464,8 @@ function demarrer() {
       e.el.style.opacity = o; e.el.style.visibility = o > 0 ? 'visible' : 'hidden';
       if (o <= 0) { e.ligneSvg.setAttribute('points', ''); e.croix.setAttribute('d', ''); e.point.setAttribute('cx', -99); return; }
       const [place, cote, a] = af;
-      const lw = e.el.offsetWidth, lh = e.el.offsetHeight;
+      if (!e.lw) { e.lw = e.el.offsetWidth; e.lh = e.el.offsetHeight; }
+      const lw = e.lw, lh = e.lh;
       const lx = cote === 'g' ? place[0] * W : Math.min(place[0] * W, W - lw - 24), ly = place[1] * H;
       e.el.style.transform = 'translate(' + lx + 'px,' + ly + 'px)';
       e.el.style.textAlign = cote === 'g' ? 'left' : 'right';

@@ -153,14 +153,19 @@
   var etiquettes = $$('.appli-etiquettes .film-etiquette');
   var ligne = $('#appli-ligne'), croix = $('#appli-croix'), point = $('#appli-point');
   var chap = $('#appli-chap'), pct = $('#appli-pct'), boutonsEtapes = $$('.appli-etapes button');
-  var etapePrec = -1, visible = false, temps0 = performance.now();
+  var etapePrec = -1, visible = false, temps0 = performance.now(), tPrec = 0, yLisse = null;
   var CONGES = [4, 5, 6, 7, 8], INDISPO = 15;
 
   function image(t) {
     var temps = (t - temps0) / 1000;
     var dist = sec.offsetHeight - pin.offsetHeight;
-    var p = cl((window.scrollY - sec.offsetTop) / dist);
-    var entree = lisse(cl((window.scrollY - (sec.offsetTop - H * 0.9)) / (H * 0.9)));
+    // Défilement amorti : la scène glisse vers la position de la page au lieu d'y sauter.
+    var dt = Math.min(0.1, tPrec ? (t - tPrec) / 1000 : 0.016); tPrec = t;
+    var yCible = window.scrollY;
+    yLisse = yLisse === null ? yCible : yLisse + (yCible - yLisse) * (1 - Math.exp(-dt * 6.5));
+    if (Math.abs(yCible - yLisse) < 0.3) yLisse = yCible;
+    var p = cl((yLisse - sec.offsetTop) / dist);
+    var entree = lisse(cl((yLisse - (sec.offsetTop - H * 0.9)) / (H * 0.9)));
     souris.sx += (souris.x - souris.sx) * 0.08; souris.sy += (souris.y - souris.sy) * 0.08;
 
     /* Le téléphone : entrée en rotation, puis il suit la souris */
