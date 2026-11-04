@@ -225,7 +225,8 @@ function demarrer() {
         const vous = pion.classList.contains('vous');
         const teinte = TEINTES[(parseInt((pion.className.match(/c(\d)/) || [0, 1])[1], 10) - 1) % 6];
         emplacements.push({ x, y, w: LARG_J, h: HAUT_R, d: 0.26, tex: texBrique(vous ? 'vous' : 'pion', pion.textContent, teinte), vous,
-          info: 'Dr ' + pion.textContent.split('').join('.') + '. ' + posteNom.toLowerCase() + ', ' + jourNom, poste: posteNom });
+          info: 'Dr ' + pion.textContent.split('').join('.') + '. ' + posteNom.toLowerCase() + ', ' + jourNom, poste: posteNom,
+          ini: pion.textContent, col: c, jour: jourNom });
       }
     }
   }
@@ -252,6 +253,68 @@ function demarrer() {
     new THREE.MeshStandardMaterial({ map: socleTex, roughness: .7, metalness: .05, transparent: true, opacity: 0 }));
   socle.position.set(0, 0.05, -0.2); groupe.add(socle);
 
+  /* ---------- Chapitre 05 : un médecin tombe malade, ses postes sont repris en deux clics ----------
+     Fidèle au gestionnaire (« Remplacer un médecin absent ») : Julandrex libère les postes,
+     propose pour chacun les collègues éligibles, le responsable assigne. */
+  const P_FIN = 0.74; // les chapitres 01 à 04 occupent les 74 premiers pour cent du défilement
+  const dr = k => 'Dr ' + k.split('').join('.') + '.';
+  const parIni = {};
+  aGenerer.forEach(c => { if (!c.pl.vous) (parIni[c.pl.ini] = parIni[c.pl.ini] || []).push(c); });
+  const malade = Object.keys(parIni).find(k => parIni[k].length >= 2 && new Set(parIni[k].map(c => c.pl.col)).size >= 2) || Object.keys(parIni)[0];
+  const absents = parIni[malade].slice(0, 2);
+  absents.forEach(c => { c.absent = true; });
+  const toutesIni = [...new Set(aGenerer.map(c => c.pl.ini))];
+  const nuitVeille = col => aGenerer.filter(c => c.pl.col === col - 1 && /nuit/i.test(c.pl.poste)).map(c => c.pl.ini);
+  const texSpecial = (type, ini) => tex('s|' + type + '|' + ini, 192, 144, (g, w, h) => {
+    g.textAlign = 'center'; g.textBaseline = 'middle';
+    if (type === 'malade') {
+      g.fillStyle = '#A4492F'; g.fillRect(0, 0, w, h);
+      g.fillStyle = '#FFFFFF'; g.font = '800 52px ' + SG; g.fillText(ini, w / 2, 62);
+      g.font = '500 22px ' + MONO; g.fillText('MALADE', w / 2, 112);
+    } else if (type === 'trou') {
+      g.fillStyle = '#10223D'; g.fillRect(0, 0, w, h);
+      g.setLineDash([12, 9]); g.strokeStyle = '#F2A58E'; g.lineWidth = 6; g.strokeRect(8, 8, w - 16, h - 16);
+      g.fillStyle = '#F2A58E'; g.font = '500 21px ' + MONO; g.fillText('À REPRENDRE', w / 2, h / 2 + 2);
+    } else {
+      g.fillStyle = '#2F6A62'; g.fillRect(0, 0, w, h);
+      g.strokeStyle = '#E4C65E'; g.lineWidth = 12; g.strokeRect(6, 6, w - 12, h - 12);
+      g.fillStyle = '#FFFFFF'; g.font = '800 58px ' + SG; g.fillText(ini, w / 2, h / 2 + 4);
+    }
+  });
+  const texMalade = texSpecial('malade', malade);
+  const pris = [];
+  const reprises = absents.map((c, i) => {
+    const col = c.pl.col;
+    const estNuit = /nuit/i.test(c.pl.poste);
+    const lendemain = estNuit ? aGenerer.filter(x => x.pl.col === col + 1).map(x => x.pl.ini) : [];
+    const memeJour = aGenerer.filter(x => x.pl.col === col).map(x => x.pl.ini);
+    const occupes = new Set(memeJour.concat(nuitVeille(col), lendemain));
+    const libres = toutesIni.filter(k => k !== malade && k !== 'MV' && !occupes.has(k));
+    const choisi = libres.find(k => !pris.includes(k)) || libres[0] || toutesIni[0];
+    pris.push(choisi);
+    const second = libres.find(k => k !== choisi);
+    const refuse = [...occupes].find(k => k !== malade && k !== choisi);
+    const trou = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: texSpecial('trou', ''), roughness: .6, transparent: true, opacity: 0 }));
+    const brique = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: texSpecial('remp', choisi), roughness: .5, metalness: .04, transparent: true, opacity: 0 }));
+    groupe.add(trou, brique);
+    // Fenêtre du gestionnaire : les collègues proposés pour ce poste
+    const f = document.createElement('div'); f.className = 'film-remp';
+    const ligneRemp = (k, ok, raison) => '<li><span class="av">' + k + '</span><span><b>' + dr(k) + '</b><small>' + raison + '</small></span><em class="' + (ok ? 'ok' : 'non') + '">' + (ok ? 'Possible' : 'Non') + '</em></li>';
+    f.innerHTML = '<p class="film-remp-titre">' + c.pl.poste + ', ' + c.pl.jour + '</p>'
+      + '<p class="film-remp-sous">' + dr(malade) + ' malade : poste à reprendre</p><ul>'
+      + ligneRemp(choisi, true, 'libre, heures sous la cible')
+      + (second ? ligneRemp(second, true, 'libre ce jour-là') : '')
+      + (refuse ? ligneRemp(refuse, false, memeJour.includes(refuse) ? 'déjà en poste ce jour' : nuitVeille(col).includes(refuse) ? 'nuit la veille, repos' : 'en poste le lendemain de cette nuit') : '')
+      + '</ul><span class="film-remp-btn">Assigner ' + dr(choisi) + '</span>';
+    etiquettesZone.appendChild(f);
+    const trait = document.createElementNS('http://www.w3.org/2000/svg', 'polyline'); traits.appendChild(trait);
+    const t0r = i === 0 ? 0.3 : 0.54;
+    return { c, trou, brique, choisi, f, trait, de: t0r, appui: t0r + 0.14, pose: t0r + 0.15, a: t0r + 0.22,
+      info: dr(choisi) + ' ' + c.pl.poste.toLowerCase() + ', ' + c.pl.jour + ' (remplace ' + dr(malade) + ')' };
+  });
+  const remplEtat = section.querySelector('.film-remp-etat');
+  reprises.forEach(r => tuiles.push(r.brique));
+
   /* ---------- Étiquettes reliées au planning ---------- */
   const trouver = f => cellules.find(c => c.pl && f(c.pl));
   const nuitSuivieDeRepos = cellules.find(c => c.pl && c.pl.poste === 'Nuit' && c.pl.info);
@@ -263,6 +326,9 @@ function demarrer() {
     { cle: 'EQUITE_04', titre: 'Week-ends répartis', detail: 'selon le temps de travail de chacun', cible: cellules.filter(c => c.pl && c.pl.poste && c.pl.poste.indexOf('Week-end') === 0 && c.pl.info).slice(-1)[0] },
     { cle: 'ECHANGE_05', titre: 'Un échange en deux clics', detail: 'règles revérifiées avant validation', cible: cellules.filter(c => c.pl && c.pl.poste === 'Soir' && c.pl.info).slice(-2)[0] }
   ].filter(c => c.cible);
+  CALLOUTS.push(
+    { cle: 'REMPLACEMENT_06', titre: 'Absence reprise en deux clics', detail: 'collègues éligibles proposés, règles revérifiées', cible: { m: reprises[0].brique }, q5: 0.8 },
+    { cle: 'PUBLICATION_07', titre: 'Remplaçants prévenus', detail: 'e-mail et notification, agendas mis à jour', cible: { m: reprises[reprises.length - 1].brique }, q5: 0.86 });
   const etiquettes = CALLOUTS.map((c, i) => {
     const d = document.createElement('div'); d.className = 'film-etiquette';
     d.innerHTML = '<b>' + c.cle + '</b><span>' + c.titre + '</span><small>' + c.detail + '</small>';
@@ -271,7 +337,7 @@ function demarrer() {
     const croix = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     const point = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); point.setAttribute('r', '3');
     traits.append(ligneSvg, croix, point);
-    return { ...c, el: d, ligneSvg, croix, point, debut: 0.78 + i * 0.036 };
+    return { ...c, el: d, ligneSvg, croix, point, debut: c.q5 || 0.78 + i * 0.036 };
   });
   // Emplacements des étiquettes, à gauche et à droite ; chacune va du côté de sa brique.
   const PLACES = {
@@ -299,7 +365,7 @@ function demarrer() {
     distPlan = distPour(largeurPlan, hauteurPlan * 0.8, etroit ? 1.16 : 1.32);
     vue = 2 * distTab * tanF;
   }
-  addEventListener('resize', () => { redim(); etiquettes.forEach(e => { e.lw = 0; }); }); redim();
+  addEventListener('resize', () => { redim(); etiquettes.forEach(e => { e.lw = 0; }); reprises.forEach(r => { r.fw = 0; }); }); redim();
 
   /* ---------- Souris : parallaxe, lampe, brique survolée ---------- */
   const souris = { x: 0, y: 0, sx: 0, sy: 0, dedans: false, px: 0, py: 0 };
@@ -325,7 +391,7 @@ function demarrer() {
   }
   addEventListener('scroll', lireProgres, { passive: true }); lireProgres();
 
-  const CHAPS = [[0, '01 / Le tableur'], [0.19, '02 / Le moindre changement'], [0.45, '03 / Génération automatique'], [0.77, '04 / Le planning du service']];
+  const CHAPS = [[0, '01 / Le tableur'], [0.19, '02 / Le moindre changement'], [0.45, '03 / Génération automatique'], [0.77, '04 / Le planning du service'], [1, '05 / Un médecin malade']];
 
   // Le film suit le défilement avec un léger amorti : un cran de molette glisse au lieu de sauter.
   let pLisse = progres, tPrec = 0;
@@ -333,7 +399,7 @@ function demarrer() {
     const dt = Math.min(0.1, tPrec ? (t - tPrec) / 1000 : 0.016); tPrec = t;
     pLisse += (progres - pLisse) * (1 - Math.exp(-dt * 6.5));
     if (Math.abs(progres - pLisse) < 0.00005) pLisse = progres;
-    const p = pLisse, temps = (t - t0) / 1000;
+    const pTotal = pLisse, p = Math.min(1, pTotal / P_FIN), ph = seg(pTotal, P_FIN + 0.005, 1), temps = (t - t0) / 1000;
     souris.sx += (souris.x - souris.sx) * 0.06; souris.sy += (souris.y - souris.sy) * 0.06;
 
     /* Textes */
@@ -341,14 +407,15 @@ function demarrer() {
     texte.style.opacity = 1 - tT; texte.style.transform = 'translateY(' + (-30 * tT) + 'px)';
     texte.style.visibility = tT >= 1 ? 'hidden' : 'visible';
     chapitres.forEach(ch => {
-      const de = +ch.dataset.de, a = +ch.dataset.a;
-      const o = Math.min(seg(p, de, de + 0.025), 1 - seg(p, a - 0.025, a));
+      const de = +ch.dataset.de, a = +ch.dataset.a, base = ch.dataset.phase === '5' ? ph : p;
+      const o = Math.min(seg(base, de, de + 0.025), 1 - seg(base, a - 0.025, a));
       ch.style.opacity = o; ch.style.transform = 'translateY(' + (1 - o) * 18 + 'px)';
       ch.style.visibility = o <= 0 ? 'hidden' : 'visible';
     });
     let nomChap = CHAPS[0][1]; CHAPS.forEach(c => { if (p >= c[0]) nomChap = c[1]; });
+    if (ph <= 0 && p >= 1) nomChap = CHAPS[3][1];
     if (hudChap.textContent !== nomChap) hudChap.textContent = nomChap;
-    hudPct.textContent = String(Math.round(p * 100)).padStart(3, '0') + ' %';
+    hudPct.textContent = String(Math.round(pTotal * 100)).padStart(3, '0') + ' %';
     hudAide.style.opacity = p > 0.77 && !etroit ? 1 : 0;
 
     /* Phases de la transformation */
@@ -384,10 +451,11 @@ function demarrer() {
       const sI = eX * (1 - eI);
       if (pl && pl.info && eI >= 1) generes++;
       const versPlan = pl && eI > 0.5;
-      const cle = versPlan ? 'P' : type + txt;
+      const enRouge = cel.absent && ph >= 0.06;
+      const cle = enRouge ? 'M' : versPlan ? 'P' : type + txt;
       if (cle !== cel.cle) {
         cel.cle = cle;
-        m.material.map = versPlan ? pl.tex : texCellule(type, txt);
+        m.material.map = enRouge ? texMalade : versPlan ? pl.tex : texCellule(type, txt);
       }
       const cible = pl || { x: ex.x * 2.4 + cel.dir.x * 3, y: ex.y * 2.4 + cel.dir.y * 3, w: ex.w * .5, h: ex.h * .5, d: .05 };
       const fin = pl ? eI : 0;
@@ -403,7 +471,29 @@ function demarrer() {
       const brille = m === survol ? 0.55 : 0;
       m.material.emissive.setRGB(brille, brille * 0.82, brille * 0.35);
       m.material.emissiveIntensity = 1;
+      if (cel.absent && ph > 0) {
+        const monte = lisse3(seg(ph, 0.16, 0.26)), pouls = seg(ph, 0.06, 0.1) * (1 - monte);
+        m.position.z += monte * 2.4;
+        m.material.opacity = 1 - monte; m.visible = m.material.opacity > 0.01;
+        m.material.emissive.setRGB(0.35 * pouls * (0.6 + 0.4 * Math.sin(temps * 7)), 0.02 * pouls, 0);
+      }
     }
+
+    /* Chapitre 05 : trous, fenêtres des remplaçants, briques qui reprennent les postes */
+    reprises.forEach(r => {
+      const pl = r.c.pl;
+      r.trou.position.set(pl.x, pl.y, 0.03);
+      r.trou.scale.set(pl.w, pl.h, 0.05);
+      const eP = lisse3(seg(ph, r.pose, r.pose + 0.05));
+      r.trou.material.opacity = seg(ph, 0.18, 0.24) * (1 - eP); r.trou.visible = r.trou.material.opacity > 0.01;
+      r.brique.position.set(pl.x, pl.y, pl.d / 2 + (1 - eP) * 3);
+      r.brique.scale.set(pl.w, pl.h, pl.d);
+      r.brique.material.opacity = Math.min(1, eP * 3); r.brique.visible = eP > 0;
+      const b = r.brique === survol ? 0.55 : 0;
+      r.brique.material.emissive.setRGB(b, b * 0.82, b * 0.35);
+    });
+    const oE = seg(ph, 0.8, 0.84);
+    remplEtat.style.opacity = oE; remplEtat.style.visibility = oE > 0 ? 'visible' : 'hidden';
     socle.material.opacity = seg(p, 0.53, 0.6);
     socle.scale.set(mix(0.6, 1, eA), mix(0.6, 1, eA), 1);
 
@@ -428,14 +518,15 @@ function demarrer() {
     survol = null;
     if (souris.dedans && p > GEN_A) {
       ndc.set(souris.x, souris.y); ray.setFromCamera(ndc, camera);
-      const hit = ray.intersectObjects(tuiles, false)[0] || ray.intersectObject(socle, false)[0];
+      const hit = ray.intersectObjects(tuiles, false).find(h => h.object.visible && h.object.material.opacity > 0.5) || ray.intersectObject(socle, false)[0];
       if (hit) {
         lampe.position.copy(hit.point).add(new THREE.Vector3(0, 0, 1.4).applyQuaternion(groupe.quaternion));
         lampe.intensity += (14 - lampe.intensity) * 0.15;
         if (hit.object !== socle) survol = hit.object;
       } else lampe.intensity *= 0.85;
     } else lampe.intensity *= 0.85;
-    const celSurvol = survol && cellules.find(c => c.m === survol);
+    const rSurvol = survol && reprises.find(r => r.brique === survol);
+    const celSurvol = survol && (rSurvol ? { pl: { info: rSurvol.info } } : cellules.find(c => c.m === survol));
     if (celSurvol && celSurvol.pl.info) {
       bulle.hidden = false; bulle.textContent = celSurvol.pl.info;
       bulle.style.transform = 'translate(' + (souris.px + 18) + 'px,' + (souris.py + 14) + 'px)';
@@ -446,7 +537,11 @@ function demarrer() {
 
     /* Étiquettes : chacune du côté de sa brique, reliée par un trait */
     const places = PLACES[etroit ? 'etroit' : 'large'];
-    const ancres = etiquettes.map(e => {
+    etiquettes.forEach(e => {
+      e.o = e.q5 ? seg(ph, e.debut, e.debut + 0.04) : seg(p, e.debut, e.debut + 0.04) * (1 - seg(p, 0.985, 1));
+      e.trace = e.q5 ? seg(ph, e.debut, e.debut + 0.05) : seg(p, e.debut, e.debut + 0.05);
+    });
+    const ancres = etiquettes.filter(e => e.o > 0).map(e => {
       v.set(0, 0, 0.5); e.cible.m.localToWorld(v); v.project(camera);
       return { e, ax: (v.x + 1) / 2 * W, ay: (1 - v.y) / 2 * H };
     });
@@ -460,7 +555,7 @@ function demarrer() {
     ['g', 'd'].forEach(c => { cotes[c].sort((a, b) => a.ay - b.ay).forEach((a, i) => { if (places[c][i]) affecte.set(a.e, [places[c][i], c, a]); }); });
     etiquettes.forEach(e => {
       const af = affecte.get(e);
-      const o = af ? seg(p, e.debut, e.debut + 0.04) * (1 - seg(p, 0.985, 1)) : 0;
+      const o = af ? e.o : 0;
       e.el.style.opacity = o; e.el.style.visibility = o > 0 ? 'visible' : 'hidden';
       if (o <= 0) { e.ligneSvg.setAttribute('points', ''); e.croix.setAttribute('d', ''); e.point.setAttribute('cx', -99); return; }
       const [place, cote, a] = af;
@@ -471,11 +566,27 @@ function demarrer() {
       e.el.style.textAlign = cote === 'g' ? 'left' : 'right';
       const uy = ly + lh + 6;
       const x1 = cote === 'g' ? lx : lx + lw, x2 = cote === 'g' ? lx + lw : lx;
-      const trace = seg(p, e.debut, e.debut + 0.05);
+      const trace = e.trace;
       const qx = mix(x2, a.ax, trace), qy = mix(uy, a.ay, trace);
       e.ligneSvg.setAttribute('points', x1 + ',' + uy + ' ' + x2 + ',' + uy + ' ' + qx + ',' + qy);
       e.croix.setAttribute('d', trace >= 1 ? 'M' + (a.ax - 7) + ' ' + a.ay + 'h14M' + a.ax + ' ' + (a.ay - 7) + 'v14' : '');
       e.point.setAttribute('cx', trace >= 1 ? a.ax : -99); e.point.setAttribute('cy', a.ay);
+    });
+
+    reprises.forEach(r => {
+      const o = Math.min(seg(ph, r.de, r.de + 0.03), 1 - seg(ph, r.a - 0.03, r.a));
+      r.f.style.opacity = o; r.f.style.visibility = o > 0 ? 'visible' : 'hidden';
+      r.f.classList.toggle('appui', ph >= r.appui);
+      if (o <= 0) { r.trait.setAttribute('points', ''); return; }
+      v.set(0, 0, 0.5); r.trou.localToWorld(v); v.project(camera);
+      const ax = (v.x + 1) / 2 * W, ay = (1 - v.y) / 2 * H;
+      if (!r.fw) { r.fw = r.f.offsetWidth; r.fh = r.f.offsetHeight; }
+      const droite = ax < W * 0.55 && !etroit;
+      const fx = etroit ? (W - r.fw) / 2 : droite ? Math.min(W - r.fw - 24, ax + 90) : Math.max(24, ax - 90 - r.fw);
+      const fy = etroit ? H * 0.06 + 60 : Math.max(80, Math.min(H - r.fh - 70, ay - r.fh - 30));
+      r.f.style.transform = 'translate(' + fx + 'px,' + fy + 'px)';
+      const bx = etroit ? fx + r.fw / 2 : droite ? fx : fx + r.fw, by = etroit ? fy + r.fh : fy + r.fh - 20;
+      r.trait.setAttribute('points', bx + ',' + by + ' ' + ax + ',' + ay);
     });
   }
 

@@ -528,7 +528,7 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
 /* ---------- Film d'ouverture (WebGL) ----------
    Actif seulement si film.js a démarré (classe film-on). Sinon, premier écran statique. */
 .film-toile, .film-chap, .film-traits, .film-etiquettes, .film-bulle, .film-hud { display: none; }
-.film-on .ouverture { height: 820vh; margin-top: -72px; background: #B4BEC9; overflow: clip; }
+.film-on .ouverture { height: 1100vh; margin-top: -72px; background: #B4BEC9; overflow: clip; }
 .film-on .scene-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; padding: 0; }
 .film-on .scene-plateau, .film-on .hud { display: none; }
 .film-on .film-toile { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -572,7 +572,7 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
 .film-on .entete.sur-film .nav.ouvert > a:not(.btn) { color: #fff; }
 
 @media (max-width: 760px) {
-  .film-on .ouverture { height: 760vh; }
+  .film-on .ouverture { height: 1030vh; }
   .film-on .scene-texte { top: calc(72px + 3vh); }
   .film-on .film-chap, .film-on .film-chap-centre { left: var(--gout); right: var(--gout); top: calc(72px + 4vh); bottom: auto; max-width: none; margin: 0; text-align: left; }
   .film-chap-centre .film-petit { margin: 0; }
@@ -729,3 +729,24 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
 .tel-ecran .tel-notif-echange { inset: 50px 10px auto 10px; height: auto; border: 0; text-align: left; font: inherit; font-size: 13.5px; cursor: pointer; display: block; width: auto; }
 .tel-notif-echange span { display: block; }
 .tel-notif-echange b { color: #A07A12; }
+
+/* Film, chapitre 05 : fenêtre des remplaçants et bilan */
+.film-remp, .film-remp-etat { display: none; }
+.film-on .film-remp { display: block; position: absolute; left: 0; top: 0; width: 300px; z-index: 4; background: #fff; color: #24364D; padding: 16px 16px 14px; opacity: 0; visibility: hidden; font-size: 14px; }
+.film-remp-titre { margin: 0; font-weight: 700; color: #0E2A4E; font-size: 16px; }
+.film-remp-sous { margin: 2px 0 10px; font: 500 11.5px/1.3 "JetBrains Mono", monospace; text-transform: uppercase; color: #A4492F; }
+.film-remp ul { list-style: none; margin: 0 0 12px; padding: 0; }
+.film-remp li { display: grid; grid-template-columns: 32px 1fr auto; gap: 10px; align-items: center; padding: 8px 0; border-top: 1px solid #EDF1F4; }
+.film-remp .av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 11.5px; font-weight: 700; color: #fff; background: #5C6E86; }
+.film-remp li b { display: block; color: #0E2A4E; font-size: 14px; }
+.film-remp li small { display: block; color: #6B7B8F; font-size: 12.5px; }
+.film-remp em { font-style: normal; font-size: 12px; font-weight: 600; padding: 3px 8px; }
+.film-remp em.ok { background: #E3F1EA; color: #2F7D5B; }
+.film-remp em.non { background: #F3E6E1; color: #A4492F; }
+.film-remp-btn { display: block; text-align: center; padding: 11px; background: #0E2A4E; color: #fff; font-weight: 700; transition: background-color .2s, color .2s, transform .15s; }
+.film-remp.appui .film-remp-btn { background: var(--or); color: var(--nuit); transform: scale(.97); }
+.film-on .film-remp-etat { display: block; position: absolute; z-index: 3; left: 50%; bottom: 11vh; transform: translateX(-50%); margin: 0; font: 500 13px/1.4 "JetBrains Mono", monospace; text-transform: uppercase; letter-spacing: .04em; color: #fff; text-align: center; width: min(90vw, 720px); opacity: 0; visibility: hidden; }
+@media (max-width: 760px) { .film-on .film-remp { width: min(300px, 86vw); } }
+
+.film-on .film-chap[data-phase="5"] { top: auto; bottom: 12vh; max-width: min(520px, 40vw); }
+@media (max-width: 760px) { .film-on .film-chap[data-phase="5"] { top: auto; bottom: 12vh; max-width: none; } }
