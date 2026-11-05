@@ -164,8 +164,8 @@
       e.preventDefault();
       var v = function (n) { return (fDemo.elements[n] && fDemo.elements[n].value || '').trim(); };
       var err = $('.erreur', fDemo);
-      if (!v('nom') || !v('email') || !v('hopital')) { err.textContent = 'Indiquez votre nom, votre e-mail et votre hôpital.'; err.classList.add('vue'); return; }
-      err.classList.remove('vue');
+      if (!v('nom') || !v('email') || !v('hopital')) { err.textContent = 'Indiquez votre nom, votre e-mail et votre hôpital.'; err.classList.add('affiche'); return; }
+      err.classList.remove('affiche');
       var corps = [
         'Bonjour,', '',
         'Je souhaite une démonstration de Julandrex.', '',
@@ -199,15 +199,13 @@
 
     function recap() {
       var f = formuleChoisie(), annuel = selP.value === 'annuel';
-      var engage = fCmd.elements.engagement.checked || annuel;
+      var engage = annuel;
       $('#r-formule').textContent = f.nom;
       $('#r-periode').textContent = annuel ? 'Annuel' : 'Mensuel';
       var abo = annuel ? f.prix * (12 - (C.moisOffertsAnnuel || 0)) : f.prix;
       $('#r-abo').textContent = euros(abo) + (annuel ? ' / an' : ' / mois');
       $('#r-mer').textContent = engage ? 'Offerte' : euros(C.miseEnRoute || 0);
       $('#r-total').textContent = euros(abo + (engage ? 0 : (C.miseEnRoute || 0)));
-      fCmd.elements.engagement.disabled = annuel;
-      if (annuel) fCmd.elements.engagement.checked = true;
 
       var carte = $('#mode-carte'), dispo = !!lienStripe();
       carte.disabled = !dispo;
@@ -234,10 +232,10 @@
       e.preventDefault();
       var el = fCmd.elements, err = $('.erreur', fCmd);
       var manque = ['hopital', 'service', 'medecins', 'contact', 'email', 'adresse'].filter(function (n) { return !el[n].value.trim(); });
-      if (manque.length) { err.textContent = 'Il manque des informations : complétez les champs marqués d\'un astérisque.'; err.classList.add('vue'); el[manque[0]].focus(); return; }
-      if (!el.conditions.checked) { err.textContent = 'Cochez l\'acceptation des conditions générales pour continuer.'; err.classList.add('vue'); el.conditions.focus(); return; }
-      err.classList.remove('vue');
-      var f = formuleChoisie(), annuel = el.periode.value === 'annuel', engage = el.engagement.checked || annuel;
+      if (manque.length) { err.textContent = 'Il manque des informations : complétez les champs marqués d\'un astérisque.'; err.classList.add('affiche'); el[manque[0]].focus(); return; }
+      if (!el.conditions.checked) { err.textContent = 'Cochez l\'acceptation des conditions générales pour continuer.'; err.classList.add('affiche'); el.conditions.focus(); return; }
+      err.classList.remove('affiche');
+      var f = formuleChoisie(), annuel = el.periode.value === 'annuel', engage = annuel;
       var ref = 'JLX-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
 
       if ($('#mode-carte').checked && lienStripe()) {
@@ -249,7 +247,7 @@
         'BON DE COMMANDE ' + ref, '',
         'Formule : ' + f.nom + ', paiement ' + (annuel ? 'annuel' : 'mensuel'),
         'Abonnement : ' + euros(annuel ? f.prix * (12 - (C.moisOffertsAnnuel || 0)) : f.prix) + ' HTVA ' + (annuel ? 'par an' : 'par mois'),
-        'Engagement de 12 mois : ' + (engage ? 'oui (mise en route offerte)' : 'non (mise en route ' + euros(C.miseEnRoute || 0) + ' HTVA)'),
+        'Mise en route : ' + (engage ? 'offerte (paiement annuel)' : euros(C.miseEnRoute || 0) + ' HTVA, facturée avec le premier mois'),
         'Début souhaité : ' + (el.debut.value || 'à convenir'), '',
         'Hôpital : ' + el.hopital.value, 'Service : ' + el.service.value, 'Médecins actifs : ' + el.medecins.value, '',
         'Contact : ' + el.contact.value + (el.fonction.value ? ', ' + el.fonction.value : ''),
