@@ -164,8 +164,30 @@
       e.preventDefault();
       var v = function (n) { return (fDemo.elements[n] && fDemo.elements[n].value || '').trim(); };
       var err = $('.erreur', fDemo);
-      if (!v('nom') || !v('email') || !v('hopital')) { err.textContent = 'Indiquez votre nom, votre e-mail et votre hôpital.'; err.classList.add('affiche'); return; }
+      var montrerErreur = function (t) { err.textContent = t; err.classList.add('affiche'); };
+      if (!v('nom') || !v('email') || !v('hopital') || !v('tel')) { montrerErreur('Indiquez votre nom, votre hôpital, votre e-mail et votre téléphone.'); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))) { montrerErreur('Vérifiez votre adresse e-mail.'); return; }
+      if (v('tel').replace(/\D/g, '').length < 8) { montrerErreur('Vérifiez votre numéro de téléphone.'); return; }
       err.classList.remove('affiche');
+      if (C.demoUrl) {
+        // La demande part directement au serveur : aucun e-mail à envoyer par le visiteur.
+        var btn = $('#btn-demo'), ok = $('#demo-envoye');
+        btn.disabled = true; btn.textContent = 'Envoi en cours…';
+        fetch(C.demoUrl, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'demo', nom: v('nom'), fonction: v('fonction'), hopital: v('hopital'), taille: v('taille'),
+            email: v('email'), tel: v('tel'), message: v('message'), site_web: v('site_web') })
+        }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { r: r, j: j }; }); })
+          .then(function (x) {
+            if (!x.r.ok) throw new Error(x.j.error || 'Envoi impossible');
+            fDemo.reset(); ok.hidden = false; btn.textContent = 'Demande envoyée';
+          })
+          .catch(function (ex) {
+            btn.disabled = false; btn.textContent = 'Demander ma démonstration';
+            montrerErreur((ex && ex.message && ex.message !== 'Failed to fetch' ? ex.message : 'Envoi impossible pour le moment.') + ' Écrivez à ' + C.contactEmail + '.');
+          });
+        return;
+      }
       var corps = [
         'Bonjour,', '',
         'Je souhaite une démonstration de Julandrex.', '',

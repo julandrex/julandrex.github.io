@@ -10,6 +10,9 @@
 window.JLX_CONFIG = {
   contactEmail: 'sorcegiuseppepro@gmail.com',
 
+  // Demandes de démonstration : envoyées au serveur, qui les enregistre et prévient Julandrex par e-mail.
+  demoUrl: 'https://zzqbcjtrtisexyokezaq.supabase.co/functions/v1/commandes',
+
   // Formules : bornes en nombre de médecins actifs, prix mensuel HTVA en euros.
   formules: [
     { id: 'petit',  nom: 'Service jusqu\'à 15 médecins', max: 15, prix: 90 },
