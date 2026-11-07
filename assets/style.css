@@ -790,3 +790,23 @@ input[type="range"] { width: 100%; accent-color: var(--encre); height: 28px; cur
 .film-on .film-chap-centre { padding: 20px 28px 22px; }
 .film-on .film-gen #film-gen-etat, .film-on .film-remp-etat { background: rgba(10, 29, 54, .88); padding: 10px 14px; }
 .film-on .film-remp-etat { width: auto; max-width: min(90vw, 720px); }
+/* Barre « Déjà client ? Accès gestionnaire » en haut de l'en-tête collant (reste visible au défilement) */
+.barre-client { background: var(--nuit); color: rgba(255,255,255,.62); font-size: 13px; line-height: 1; border-bottom: 1px solid rgba(255,255,255,.08); }
+.barre-client .wrap { display: flex; justify-content: flex-end; align-items: center; gap: 6px; height: 30px; }
+.barre-client a { color: var(--or-clair); text-decoration: none; font-weight: 600; }
+.barre-client a:hover, .barre-client a:focus-visible { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+/* Menu mobile : ouvert juste sous l'en-tête (et non à 72 px fixes), sinon la barre le décale sur le logo en haut de page */
+@media (max-width: 900px) { .entete .nav:not(.nav-courte) { position: absolute; inset: 100% 0 auto 0; } }
+/* Avec la barre, l'en-tête fait 72 + 31 = 103 px : décalages des scènes épinglées ajustés (page d'accueil seulement) */
+html:has(.barre-client) { scroll-padding-top: 119px; }
+html:has(.barre-client) .avant .fenetre { top: 135px; }
+html.scene-on:has(.barre-client) .scene-pin { top: 103px; height: calc(100svh - 103px); }
+html.film-on:has(.barre-client) .ouverture { margin-top: -103px; }
+html.film-on:has(.barre-client) .scene-texte { top: calc(103px + 6vh); }
+html.film-on:has(.barre-client) .film-chap { top: calc(103px + 9vh); }
+html.appli-on:has(.barre-client) .appli-texte { top: calc(103px + 8vh); }
+@media (max-width: 900px) { html.appli-on:has(.barre-client) .appli-texte { top: calc(103px + 2vh); } }
+@media (max-width: 760px) {
+  html.film-on:has(.barre-client) .scene-texte { top: calc(103px + 3vh); }
+  html.film-on:has(.barre-client) .film-chap, html.film-on:has(.barre-client) .film-chap-centre { top: calc(103px + 4vh); }
+}
