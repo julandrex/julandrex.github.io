@@ -65,7 +65,19 @@
 
         <div class="bloc">
           <h2>Facturation</h2>
-          <div class="champ"><label for="c-adresse">Adresse de facturation *</label><textarea id="c-adresse" name="adresse" autocomplete="street-address" placeholder="Service comptabilité, rue, numéro, code postal, ville"></textarea></div>
+          <div class="champ"><label for="c-adr-att">À l'attention de</label><input id="c-adr-att" name="adresse_attention" autocomplete="organization" placeholder="Service comptabilité fournisseurs"></div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-adr-rue">Rue *</label><input id="c-adr-rue" name="adresse_rue" autocomplete="address-line1" placeholder="Rue de la Gare"></div>
+            <div class="duo">
+              <div class="champ"><label for="c-adr-num">Numéro *</label><input id="c-adr-num" name="adresse_numero" maxlength="10" placeholder="12"></div>
+              <div class="champ"><label for="c-adr-bte">Boîte</label><input id="c-adr-bte" name="adresse_boite" maxlength="10" placeholder="3"></div>
+            </div>
+          </div>
+          <div class="duo" style="margin-top:18px">
+            <div class="champ"><label for="c-adr-cp">Code postal *</label><input id="c-adr-cp" name="adresse_cp" autocomplete="postal-code" inputmode="numeric" maxlength="4" placeholder="4000"></div>
+            <div class="champ"><label for="c-adr-commune">Commune *</label><input id="c-adr-commune" name="adresse_commune" autocomplete="address-level2" placeholder="Liège"></div>
+          </div>
+          <input type="hidden" name="adresse">
           <div class="duo" style="margin-top:18px">
             <div class="champ"><label for="c-tva">Numéro de TVA</label><input id="c-tva" name="tva" placeholder="BE0123456789"></div>
             <div class="champ"><label for="c-po">Numéro de bon de commande interne</label><input id="c-po" name="po" aria-describedby="c-po-aide"><p class="aide" id="c-po-aide">S'il est exigé par vos achats, il figurera sur chaque facture.</p></div>

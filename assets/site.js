@@ -253,8 +253,11 @@
     fCmd.addEventListener('submit', function (e) {
       e.preventDefault();
       var el = fCmd.elements, err = $('.erreur', fCmd);
-      var manque = ['hopital', 'service', 'medecins', 'contact', 'email', 'adresse'].filter(function (n) { return !el[n].value.trim(); });
+      var manque = ['hopital', 'service', 'medecins', 'contact', 'email', 'adresse_rue', 'adresse_numero', 'adresse_cp', 'adresse_commune'].filter(function (n) { return !el[n].value.trim(); });
       if (manque.length) { err.textContent = 'Il manque des informations : complétez les champs marqués d\'un astérisque.'; err.classList.add('affiche'); el[manque[0]].focus(); return; }
+      if (!/^\d{4}$/.test(el.adresse_cp.value.trim())) { err.textContent = 'Le code postal belge compte 4 chiffres.'; err.classList.add('affiche'); el.adresse_cp.focus(); return; }
+      // Adresse en un texte « À l'attention de, Rue 12 bte 3, 4000 Commune » : la forme que lit la facture Peppol.
+      el.adresse.value = [el.adresse_attention.value.trim(), el.adresse_rue.value.trim() + ' ' + el.adresse_numero.value.trim() + (el.adresse_boite.value.trim() ? ' bte ' + el.adresse_boite.value.trim() : ''), el.adresse_cp.value.trim() + ' ' + el.adresse_commune.value.trim()].filter(Boolean).join(', ');
       if (!el.conditions.checked) { err.textContent = 'Cochez l\'acceptation des conditions générales pour continuer.'; err.classList.add('affiche'); el.conditions.focus(); return; }
       err.classList.remove('affiche');
       var f = formuleChoisie(), annuel = el.periode.value === 'annuel', engage = annuel;
