@@ -1,0 +1,55 @@
+/* Imprimante de reçu (page merci). Le papier sort de la fente par à-coups. */
+.imprimante { --dents: 4px; max-width: 360px; margin: 8px auto 0; display: flex; flex-direction: column; align-items: center; }
+.imprimante-corps {
+  position: relative; z-index: 3; width: 100%; box-sizing: border-box;
+  background: linear-gradient(180deg, #17304f, var(--nuit));
+  border: 1px solid #07142a; border-radius: 22px; padding: 12px 12px 30px;
+  box-shadow: 0 22px 36px -22px rgba(10,29,54,.7), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.imprimante-tete { display: flex; align-items: center; justify-content: space-between; height: 34px; padding: 0 6px; }
+.imprimante-tete img { width: 22px; height: 22px; opacity: .9; }
+.imprimante-rejouer {
+  font: inherit; font-size: 12px; font-weight: 600; color: #E9EEF5; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 6px 12px; cursor: pointer;
+}
+.imprimante-rejouer:hover { background: rgba(255,255,255,.16); }
+.imprimante-rejouer:focus-visible { outline: 2px solid var(--or-clair); outline-offset: 2px; }
+.imprimante-ecran { background: #060F1E; border-radius: 12px; padding: 14px 16px; color: #E9EEF5; box-shadow: inset 0 0 20px 3px rgba(0,0,0,.5); }
+.imprimante-ecran strong { display: block; font-size: 15px; }
+.imprimante-ecran small { color: #93A3B8; font-size: 12px; }
+.imprimante-etat { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 12px; font-weight: 600; color: #93A3B8; }
+.imprimante-rond { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #93A3B8; border-top-color: transparent; animation: imp-tour .8s linear infinite; }
+[data-etat="fini"] .imprimante-rond { animation: none; border: 0; background: var(--ok); box-shadow: inset 0 0 0 3px #060F1E; outline: 2px solid var(--ok); }
+.imprimante-fente { position: absolute; left: 24px; right: 24px; bottom: 12px; height: 8px; border-radius: 4px; background: #02070f; box-shadow: inset 0 2px 3px #000; }
+
+.imprimante-sortie { position: relative; z-index: 2; width: calc(80% + 24px); margin-top: -14px; padding: 0 12px; overflow: hidden; height: 350px; margin-bottom: 28px; }
+.imprimante-sortie::before { content: ""; position: absolute; left: 12px; right: 12px; top: -2px; height: 8px; background: rgba(10,29,54,.55); filter: blur(6px); z-index: 2; pointer-events: none; }
+.imprimante-bande { transform: translateY(calc(-100% + 2px)); opacity: 0; }
+[data-etat="impression"] .imprimante-bande { opacity: 1; animation: imp-feed 1.9s linear forwards; }
+[data-etat="fini"] .imprimante-bande { opacity: 1; transform: none; }
+.imprimante-papier {
+  --pts: 0 0, 100% 0, 100% calc(100% - var(--dents));
+  position: relative; box-sizing: border-box; min-height: 320px; padding: 24px 22px 30px;
+  background: #fdfcf8; color: #1b2433; font-family: "JetBrains Mono", ui-monospace, Consolas, monospace; font-size: 12px; line-height: 1.7;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--dents)), 97.5% 100%, 95% calc(100% - var(--dents)), 92.5% 100%, 90% calc(100% - var(--dents)), 87.5% 100%, 85% calc(100% - var(--dents)), 82.5% 100%, 80% calc(100% - var(--dents)), 77.5% 100%, 75% calc(100% - var(--dents)), 72.5% 100%, 70% calc(100% - var(--dents)), 67.5% 100%, 65% calc(100% - var(--dents)), 62.5% 100%, 60% calc(100% - var(--dents)), 57.5% 100%, 55% calc(100% - var(--dents)), 52.5% 100%, 50% calc(100% - var(--dents)), 47.5% 100%, 45% calc(100% - var(--dents)), 42.5% 100%, 40% calc(100% - var(--dents)), 37.5% 100%, 35% calc(100% - var(--dents)), 32.5% 100%, 30% calc(100% - var(--dents)), 27.5% 100%, 25% calc(100% - var(--dents)), 22.5% 100%, 20% calc(100% - var(--dents)), 17.5% 100%, 15% calc(100% - var(--dents)), 12.5% 100%, 10% calc(100% - var(--dents)), 7.5% 100%, 5% calc(100% - var(--dents)), 2.5% 100%, 0 calc(100% - var(--dents)));
+}
+.imprimante-papier h2 { font-family: var(--f); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; margin: 0 0 4px; text-align: center; color: var(--encre); }
+.imprimante-papier .ligne { display: flex; justify-content: space-between; gap: 12px; }
+.imprimante-papier .ligne b { font-weight: 500; text-align: right; }
+.imprimante-papier hr { border: 0; border-top: 1px dashed #b9c2cf; margin: 10px 0; }
+.imprimante-papier .centre { text-align: center; color: #5A6B80; }
+.imprimante-papier .barres { height: 30px; margin-top: 12px; background: repeating-linear-gradient(90deg, #1b2433 0 2px, transparent 2px 4px, #1b2433 4px 5px, transparent 5px 8px, #1b2433 8px 11px, transparent 11px 13px); opacity: .85; }
+
+@keyframes imp-tour { to { transform: rotate(360deg); } }
+@keyframes imp-feed {
+  0% { transform: translateY(calc(-100% + 2px)); } 7% { transform: translateY(-91%); } 11% { transform: translateY(-91%); }
+  18% { transform: translateY(-81%); } 21% { transform: translateY(-81%); } 28% { transform: translateY(-70%); } 31% { transform: translateY(-70%); }
+  39% { transform: translateY(-58%); } 42% { transform: translateY(-58%); } 50% { transform: translateY(-45%); } 53% { transform: translateY(-45%); }
+  60% { transform: translateY(-32%); } 63% { transform: translateY(-32%); } 70% { transform: translateY(-20%); } 74% { transform: translateY(-20%); }
+  81% { transform: translateY(-10%); } 84% { transform: translateY(-10%); } 92% { transform: translateY(-3%); } 95% { transform: translateY(-3%); }
+  100% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-etat="impression"] .imprimante-bande { animation: none; transform: none; }
+  .imprimante-rond { animation: none; }
+}

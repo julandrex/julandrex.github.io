@@ -1,0 +1,33 @@
+/* Ticket de démonstration : sort d'une fente, talon perforé, léger tilt au survol. */
+.billetterie { display: none; margin: 18px 0 6px; }
+.billetterie.on { display: block; }
+.billetterie-fente { height: 10px; max-width: 300px; border-radius: 5px; background: #02070f; box-shadow: inset 0 2px 3px #000, 0 6px 14px -6px rgba(10,29,54,.5); position: relative; z-index: 2; }
+.billetterie-zone { max-width: 300px; overflow: hidden; margin-top: -4px; padding-bottom: 14px; perspective: 800px; }
+.billet {
+  --p: 76%; /* position de la perforation */
+  position: relative; width: 100%; box-sizing: border-box; padding: 18px 20px 0; color: var(--encre);
+  background: #F6F4EC;
+  transform: translateY(-104%); transition: transform .5s cubic-bezier(.22,1,.36,1), box-shadow .2s;
+  -webkit-mask: radial-gradient(circle 9px at 0 var(--p), #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 9px at 100% var(--p), #0000 98%, #000) right / 51% 100% no-repeat;
+          mask: radial-gradient(circle 9px at 0 var(--p), #0000 98%, #000) left / 51% 100% no-repeat, radial-gradient(circle 9px at 100% var(--p), #0000 98%, #000) right / 51% 100% no-repeat;
+  filter: drop-shadow(0 14px 18px rgba(10,29,54,.28));
+}
+.billetterie.on .billet { animation: bil-sort 1.7s linear forwards; }
+.billet-haut { display: flex; justify-content: space-between; font: 500 10px/1 "JetBrains Mono", ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: #8A6D12; }
+.billet h3 { font-size: 34px; line-height: .95; letter-spacing: -.02em; margin: 22px 0 8px; color: var(--encre); }
+.billet h3 span { color: #B58A12; }
+.billet p { margin: 0; font-size: 12px; line-height: 1.4; color: #5A6B80; }
+.billet-infos { display: flex; gap: 28px; margin: 16px 0 0; padding-bottom: 20px; font: 500 15px/1.2 "JetBrains Mono", ui-monospace, monospace; }
+.billet-infos small { display: block; font-size: 9px; letter-spacing: .1em; color: #5A6B80; margin-bottom: 4px; }
+.billet-infos .long { max-width: 140px; overflow-wrap: anywhere; font-size: 13px; }
+.billet-talon { position: relative; margin: 0 -20px; padding: 18px 20px 16px; border-top: 2px dashed rgba(14,42,78,.4); }
+.billet-barres { height: 34px; background: repeating-linear-gradient(90deg, var(--encre) 0 2px, transparent 2px 4px, var(--encre) 4px 5px, transparent 5px 8px, var(--encre) 8px 11px, transparent 11px 13px); opacity: .9; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .billetterie.fini .billet:hover { transform: rotateX(4deg) rotateY(-5deg) translateY(-2px); }
+}
+@keyframes bil-sort {
+  0% { transform: translateY(-104%); } 14% { transform: translateY(-92%); } 22% { transform: translateY(-92%); }
+  36% { transform: translateY(-74%); } 44% { transform: translateY(-74%); } 58% { transform: translateY(-52%); } 66% { transform: translateY(-52%); }
+  80% { transform: translateY(-24%); } 88% { transform: translateY(-24%); } 100% { transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) { .billetterie.on .billet { animation: none; transform: none; } }

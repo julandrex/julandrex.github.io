@@ -10,6 +10,7 @@
 <link rel="icon" href="assets/julandrex-logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/ticket.css">
 <script>document.documentElement.className = "js";</script>
 </head>
 <body>
@@ -23,7 +24,28 @@
 
 <main>
   <div class="page-tete"><div class="wrap"><h1>Paiement reçu, merci.</h1><p>Stripe vous envoie le reçu par e-mail. Votre espace est créé dans les deux jours ouvrables.</p></div></div>
-  <div class="page-corps"><div class="wrap"><div class="texte-legal">
+  <div class="page-corps"><div class="wrap">
+<section class="imprimante" id="imprimante" data-etat="traitement" aria-label="Reçu de commande">
+  <div class="imprimante-corps">
+    <div class="imprimante-tete"><img src="assets/julandrex-logo.svg" alt="" width="22" height="22"><button type="button" class="imprimante-rejouer">Rejouer</button></div>
+    <div class="imprimante-ecran">
+      <strong>Julandrex</strong><small>Planning de garde</small>
+      <div class="imprimante-etat" role="status" aria-live="polite"><span class="imprimante-rond" aria-hidden="true"></span><span>Traitement de la commande</span></div>
+    </div>
+    <div class="imprimante-fente" aria-hidden="true"></div>
+  </div>
+  <div class="imprimante-sortie"><div class="imprimante-bande"><article class="imprimante-papier" aria-label="Reçu">
+    <h2>Julandrex</h2><div class="centre">Reçu de commande</div><hr>
+    <div class="ligne"><span>Référence</span><b data-ref></b></div>
+    <div class="ligne"><span>Date</span><b data-date></b></div>
+    <div class="ligne"><span>Statut</span><b>Paiement reçu</b></div><hr>
+    <div class="ligne"><span>Étape 1</span><b>Convention + RGPD</b></div>
+    <div class="ligne"><span>Étape 2</span><b>Liste des médecins</b></div>
+    <div class="ligne"><span>Étape 3</span><b>1er trimestre</b></div><hr>
+    <div class="centre">Merci de votre confiance</div><div class="barres" aria-hidden="true"></div>
+  </article></div></div>
+</section>
+<div class="texte-legal">
 <h2>La suite</h2>
 <ol>
 <li>Vous recevez un e-mail pour fixer un rendez-vous de paramétrage de 45 minutes.</li>
@@ -41,5 +63,6 @@
 </footer>
 <script src="assets/config.js"></script>
 <script src="assets/site.js"></script>
+<script src="assets/ticket.js"></script>
 </body>
 </html>
