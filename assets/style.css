@@ -810,3 +810,18 @@ html.appli-on:has(.barre-client) .appli-texte { top: calc(103px + 8vh); }
   html.film-on:has(.barre-client) .scene-texte { top: calc(103px + 3vh); }
   html.film-on:has(.barre-client) .film-chap, html.film-on:has(.barre-client) .film-chap-centre { top: calc(103px + 4vh); }
 }
+
+/* Amélioration des fenêtres du film */
+
+.film-on .film-chap,
+.film-on .film-remp,
+.film-on .film-bulle,
+.film-on .film-gen #film-gen-etat,
+.film-on .film-remp-etat {
+    border-radius: 22px;
+    background: rgba(255,255,255,0.40);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+}
