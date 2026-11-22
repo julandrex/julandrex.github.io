@@ -810,3 +810,34 @@ html.appli-on:has(.barre-client) .appli-texte { top: calc(103px + 8vh); }
   html.film-on:has(.barre-client) .scene-texte { top: calc(103px + 3vh); }
   html.film-on:has(.barre-client) .film-chap, html.film-on:has(.barre-client) .film-chap-centre { top: calc(103px + 4vh); }
 }
+
+/* Film : cadres arrondis et translucides ; la scène reste visible derrière eux */
+.film-on .film-chap { border-radius: 18px; background: rgba(236, 240, 245, .58); -webkit-backdrop-filter: blur(8px) saturate(1.15); backdrop-filter: blur(8px) saturate(1.15); }
+.film-on .film-remp { border-radius: 16px; background: rgba(255, 255, 255, .8); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.film-on .film-remp li { border-top-color: rgba(14, 42, 78, .08); }
+.film-remp-btn { border-radius: 10px; }
+.film-remp em { border-radius: 6px; }
+.film-on .film-gen #film-gen-etat, .film-on .film-remp-etat { border-radius: 12px; background: rgba(10, 29, 54, .55); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.film-gen-btn { border-radius: 12px; }
+.film-on .film-bulle { border-radius: 8px; }
+@media (min-width: 761px) {
+  .film-on .film-chap { max-width: min(500px, 38vw); }
+  .film-on .film-chap-centre { max-width: 600px; margin-left: -300px; }
+  .film-on .film-chap[data-phase="5"] { max-width: min(460px, 36vw); }
+}
+/* Le cadre du chapitre 05 reste en bas, même avec la barre « Déjà client ? » */
+html.film-on:has(.barre-client) .film-chap[data-phase="5"] { top: auto; }
+/* Fenêtre des remplaçants plus compacte */
+.film-on .film-remp { width: 280px; padding: 12px 14px 12px; font-size: 13px; }
+.film-on .film-remp-titre { font-size: 15px; }
+.film-on .film-remp-sous { margin: 2px 0 6px; }
+.film-on .film-remp li { padding: 5px 0; gap: 8px; grid-template-columns: 28px 1fr auto; }
+.film-on .film-remp .av { width: 26px; height: 26px; font-size: 10.5px; }
+.film-on .film-remp ul { margin-bottom: 8px; }
+.film-on .film-remp-btn { padding: 9px; }
+/* Chapitre 05 : légende en haut, au-dessus du planning qui descend */
+@media (min-width: 761px) {
+  html.film-on .film-chap[data-phase="5"], html.film-on:has(.barre-client) .film-chap[data-phase="5"] { top: calc(103px + 3vh); bottom: auto; left: 50%; margin-left: -270px; max-width: 540px; text-align: center; padding: 16px 24px 18px; }
+  .film-on .film-chap[data-phase="5"] .film-grand { font-size: clamp(26px, 2.6vw, 38px); margin-bottom: 8px; }
+  .film-on .film-chap[data-phase="5"] .film-petit { font-size: 16px; margin: 0 auto; }
+}

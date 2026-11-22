@@ -341,8 +341,8 @@ function demarrer() {
   });
   // Emplacements des étiquettes, à gauche et à droite ; chacune va du côté de sa brique.
   const PLACES = {
-    large: { g: [[.04, .08], [.04, .2], [.04, .8]], d: [[.75, .08], [.75, .2], [.75, .8]] },
-    etroit: { g: [[.04, .12], [.04, .84]], d: [[.53, .12], [.53, .84]] }
+    large: { g: [[.04, .15], [.04, .26], [.04, .8]], d: [[.75, .15], [.75, .26], [.75, .8]] },
+    etroit: { g: [[.04, .16], [.04, .84]], d: [[.53, .16], [.53, .84]] }
   };
 
   /* Toutes les textures du tableur sont dessinées et envoyées à la carte graphique d'avance :
@@ -436,9 +436,11 @@ function demarrer() {
       ry: mix(-0.32 * decal - 0.1 + Math.sin(temps * .3) * .02, 0, eA) + souris.sx * (eA > .5 ? 0.1 : 0.04),
       rz: mix(0.02, etroit ? 0.08 - 0.1 * orbite : 0.2 - 0.3 * orbite, eA)
     };
-    groupe.position.set(pose.x, pose.y, pose.z);
+    // Chapitre 05 : le planning recule et descend pour laisser la fenêtre des remplaçants au-dessus de lui.
+    const k5 = etroit ? 0 : lisse(seg(ph, 0.02, 0.14));
+    groupe.position.set(pose.x, pose.y - 2.1 * k5, pose.z);
     groupe.rotation.set(pose.rx, pose.ry, pose.rz);
-    camera.position.set(0, mix(-0.6, -1.2, eA), mix(distTab * recul, distPlan, eA) - souffle * 3);
+    camera.position.set(0, mix(-0.6, -1.2, eA), (mix(distTab * recul, distPlan, eA) - souffle * 3) * (1 + 0.3 * k5));
     camera.lookAt(0, 0, 0);
     scene.fog.near = camera.position.z * 0.85; scene.fog.far = camera.position.z * 2.4;
 
@@ -583,7 +585,10 @@ function demarrer() {
       if (!r.fw) { r.fw = r.f.offsetWidth; r.fh = r.f.offsetHeight; }
       const droite = ax < W * 0.55 && !etroit;
       const fx = etroit ? (W - r.fw) / 2 : droite ? Math.min(W - r.fw - 24, ax + 90) : Math.max(24, ax - 90 - r.fw);
-      const fy = etroit ? H * 0.06 + 60 : Math.max(80, Math.min(H - r.fh - 70, ay - r.fh - 30));
+      // Au-dessus du bord haut du planning, pour ne pas en masquer les cases
+      q.set(0, hauteurPlan / 2 + 0.55, 0.1); groupe.localToWorld(q); q.project(camera);
+      const hautPlan = (1 - q.y) / 2 * H;
+      const fy = etroit ? H * 0.06 + 60 : Math.max(120, Math.min(ay - r.fh - 30, hautPlan - r.fh - 14));
       r.f.style.transform = 'translate(' + fx + 'px,' + fy + 'px)';
       const bx = etroit ? fx + r.fw / 2 : droite ? fx : fx + r.fw, by = etroit ? fy + r.fh : fy + r.fh - 20;
       r.trait.setAttribute('points', bx + ',' + by + ' ' + ax + ',' + ay);
